@@ -1,26 +1,89 @@
 import { Hono } from "hono";
 import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate';
+import { sign, verify } from 'hono/jwt'
+import { isAuth } from "./middleware/is-auth";
 
 const app = new Hono<{
   Bindings: {
     DATABASE_URL: string
+    JWT_SECRET: string
+  },
+  Variables: {
+    userId: string
   }
 }>();
 
-app.post('/api/v1/user/signup', (c) => {
+app.use('/api/v1/blog/*', isAuth);
+// app.use('/api/v1/blog/*', async (c, next) => {
+//   const jwt = c.req.header("Authorization");
+//   if (!jwt) {
+//     c.status(401);
+//     return c.json({ error: "unauthorized" });
+//   }
+
+//   const token = jwt.split(' ')[1];
+//   const payload = await verify(token, c.env.JWT_SECRET);
+
+//   if (!payload) {
+//     c.status(401);
+//     return c.json({ error: "unauthorized" });
+//   }
+//   c.set("userId", payload.id)
+//   await next()
+// })
+
+app.post('/api/v1/user/signup', async (c) => {
+
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate())
 
-  return c.text('signup route')
+  try {
+    const body = await c.req.json();
+
+    const user = await prisma.user.create({
+      data: {
+        email: body.email,
+        password: body.password
+      }
+    })
+    const token = await sign({ id: user.id }, c.env.JWT_SECRET);
+    return c.json({ token: token });
+  } catch (error) {
+    c.status(403);
+    return c.json({ error: "error while signing up" });
+  }
 })
 
-app.post('/api/v1/user/signin', (c) => {
-  return c.text('signin route')
+app.post('/api/v1/user/signin', async (c) => {
+
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate())
+
+  const body = await c.req.json();
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: body.email,
+      password: body.password
+    }
+  })
+
+  if (!user) {
+    c.status(403)
+    return c.json({ error: "User not found" })
+  }
+
+  const token = await sign({ id: user.id }, c.env.JWT_SECRET);
+
+  return c.json({ token: token })
 })
 
 app.post('/api/v1/blog', (c) => {
+  console.log(c.get('userId'));
+
   return c.text('blog post route')
 })
 
