@@ -1,13 +1,16 @@
 import { Hono } from "hono";
 import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate';
-import { sign, verify } from 'hono/jwt'
+import { sign } from 'hono/jwt'
 import { isAuth } from "./middleware/is-auth";
+import { hashPassword } from "./utils/hashPassword";
+import { KVNamespace } from '@cloudflare/workers-types';
 
 const app = new Hono<{
   Bindings: {
     DATABASE_URL: string
     JWT_SECRET: string
+    USERS_KV: KVNamespace
   },
   Variables: {
     userId: string
@@ -15,23 +18,6 @@ const app = new Hono<{
 }>();
 
 app.use('/api/v1/blog/*', isAuth);
-// app.use('/api/v1/blog/*', async (c, next) => {
-//   const jwt = c.req.header("Authorization");
-//   if (!jwt) {
-//     c.status(401);
-//     return c.json({ error: "unauthorized" });
-//   }
-
-//   const token = jwt.split(' ')[1];
-//   const payload = await verify(token, c.env.JWT_SECRET);
-
-//   if (!payload) {
-//     c.status(401);
-//     return c.json({ error: "unauthorized" });
-//   }
-//   c.set("userId", payload.id)
-//   await next()
-// })
 
 app.post('/api/v1/user/signup', async (c) => {
 
@@ -41,18 +27,37 @@ app.post('/api/v1/user/signup', async (c) => {
 
   try {
     const body = await c.req.json();
+    const { email, password } = body;
 
+    const userKey = `user:${email.toLowerCase()}`;
+    const existingUser = await c.env.USERS_KV.get(userKey);
+
+    if (existingUser) {
+      c.status(409);
+      return c.json({ error: 'Email already taken' });
+    }
+
+    const hashedPassword = await hashPassword(password);
     const user = await prisma.user.create({
       data: {
-        email: body.email,
-        password: body.password
+        email: email,
+        password: hashedPassword
       }
     })
+
     const token = await sign({ id: user.id }, c.env.JWT_SECRET);
+    await c.env.USERS_KV.put(
+      userKey,
+      JSON.stringify({
+        email,
+        password: hashedPassword,
+      })
+    );
+
     return c.json({ token: token });
   } catch (error) {
     c.status(403);
-    return c.json({ error: "error while signing up" });
+    return c.json({ error: error });
   }
 })
 
@@ -63,16 +68,19 @@ app.post('/api/v1/user/signin', async (c) => {
   }).$extends(withAccelerate())
 
   const body = await c.req.json();
+  const { email, password } = body;
 
-  const user = await prisma.user.findUnique({
+  const hashedInputPassword = await hashPassword(password);
+
+  const user = await prisma.user.findFirst({
     where: {
-      email: body.email,
-      password: body.password
+      email: email,
+      password: hashedInputPassword
     }
   })
 
   if (!user) {
-    c.status(403)
+    c.status(404)
     return c.json({ error: "User not found" })
   }
 

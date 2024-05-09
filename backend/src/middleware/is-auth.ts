@@ -1,5 +1,5 @@
 import { createMiddleware } from 'hono/factory'
-import { sign, verify } from 'hono/jwt'
+import { verify } from 'hono/jwt'
 
 export const isAuth = createMiddleware(async (c, next) => {
     const jwt = c.req.header("Authorization");
@@ -8,7 +8,7 @@ export const isAuth = createMiddleware(async (c, next) => {
         return c.json({ error: "unauthorized" });
     }
 
-    const token = jwt.split(' ')[1];
+    const token = jwt.split('Bearer ')[1];
     const payload = await verify(token, c.env.JWT_SECRET);
 
     if (!payload) {
