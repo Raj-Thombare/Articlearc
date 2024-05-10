@@ -4,6 +4,7 @@ import { withAccelerate } from '@prisma/extension-accelerate';
 import { KVNamespace } from '@cloudflare/workers-types';
 import { sign } from 'hono/jwt'
 import { hashPassword } from "../utils/hashPassword";
+import { signupInput, signinInput } from "@raj-thombare/medium-common-types";
 
 export const userRouter = new Hono<{
     Bindings: {
@@ -22,6 +23,14 @@ userRouter.post('/signup', async (c) => {
     try {
         const body = await c.req.json();
         const { email, password } = body;
+
+        const { success } = signupInput.safeParse(body);
+        if (!success) {
+            c.status(411);
+            return c.json({
+                message: "Inputs not correct"
+            })
+        }
 
         const userKey = `user:${email.toLowerCase()}`;
         const existingUser = await c.env.USERS_KV.get(userKey);
@@ -64,6 +73,14 @@ userRouter.post('/signin', async (c) => {
     try {
         const body = await c.req.json();
         const { email, password } = body;
+
+        const { success } = signinInput.safeParse(body);
+        if (!success) {
+            c.status(411);
+            return c.json({
+                message: "Inputs not correct"
+            })
+        }
 
         const hashedInputPassword = await hashPassword(password);
 

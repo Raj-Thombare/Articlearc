@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate';
 import { isAuth } from "../middleware/is-auth";
+import { createPostInput, updatePostInput } from "@raj-thombare/medium-common-types";
 
 export const postRouter = new Hono<{
     Bindings: {
@@ -23,6 +24,14 @@ postRouter.post('/', async (c) => {
     const userId = c.get('userId');
     try {
         const body = await c.req.json();
+
+        const { success } = createPostInput.safeParse(body);
+        if (!success) {
+            c.status(411);
+            return c.json({
+                message: "Inputs not correct"
+            })
+        }
 
         const post = await prisma.post.create({
             data: {
@@ -48,6 +57,14 @@ postRouter.put('/', async (c) => {
 
     try {
         const body = await c.req.json();
+
+        const { success } = updatePostInput.safeParse(body);
+        if (!success) {
+            c.status(411);
+            return c.json({
+                message: "Inputs not correct"
+            })
+        }
 
         const post = await prisma.post.update({
             where: { id: body.id },
