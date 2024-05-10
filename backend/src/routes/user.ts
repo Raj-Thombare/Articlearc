@@ -51,7 +51,7 @@ userRouter.post('/signup', async (c) => {
         return c.json({ token: token });
     } catch (error) {
         c.status(403);
-        return c.json({ error: error });
+        return c.json({ error: "error while signing up" });
     }
 })
 
@@ -61,24 +61,34 @@ userRouter.post('/signin', async (c) => {
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
 
-    const body = await c.req.json();
-    const { email, password } = body;
+    try {
+        const body = await c.req.json();
+        const { email, password } = body;
 
-    const hashedInputPassword = await hashPassword(password);
+        const hashedInputPassword = await hashPassword(password);
 
-    const user = await prisma.user.findFirst({
-        where: {
-            email: email,
-            password: hashedInputPassword
+        const user = await prisma.user.findFirst({
+            where: {
+                email: email,
+                password: hashedInputPassword
+            }
+        })
+
+        if (!user) {
+            c.status(404)
+            return c.json({ error: "User not found" })
         }
-    })
 
-    if (!user) {
-        c.status(404)
-        return c.json({ error: "User not found" })
+        if (hashedInputPassword !== user?.password) {
+            c.status(401)
+            return c.json({ error: "Incorrect password" })
+        }
+
+        const token = await sign({ id: user.id }, c.env.JWT_SECRET);
+
+        return c.json({ token: token });
+    } catch (error) {
+        c.status(403);
+        return c.json({ error: "error while signing in" });
     }
-
-    const token = await sign({ id: user.id }, c.env.JWT_SECRET);
-
-    return c.json({ token: token })
 })

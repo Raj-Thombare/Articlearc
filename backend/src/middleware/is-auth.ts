@@ -9,12 +9,19 @@ export const isAuth = createMiddleware(async (c, next) => {
     }
 
     const token = jwt.split('Bearer ')[1];
-    const payload = await verify(token, c.env.JWT_SECRET);
+    try {
+        const payload = await verify(token, c.env.JWT_SECRET);
 
-    if (!payload) {
-        c.status(401);
-        return c.json({ error: "unauthorized" });
+        if (!payload) {
+            c.status(401);
+            return c.json({ error: "unauthorized" });
+        }
+
+        c.set("userId", payload.id)
+
+        await next();
+    } catch (error) {
+        c.status(403)
+        return c.json({ error: "you are not logged in" })
     }
-    c.set("userId", payload.id)
-    await next()
 })
