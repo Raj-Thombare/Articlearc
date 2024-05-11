@@ -1,0 +1,1 @@
+export const BACKEND = "https://medium.rajthombare.workers.dev"
