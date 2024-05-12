@@ -21,7 +21,7 @@ const Signup = () => {
     try {
       const jwt = await axios.post(`${BACKEND}/api/v1/user/signup`, postInput);
       localStorage.setItem("token", jwt.data.token);
-      navigate("/blogs");
+      navigate("/");
     } catch (error) {
       alert("Error sending request");
     }
