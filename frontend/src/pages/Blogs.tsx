@@ -1,5 +1,5 @@
 import { BlogCard } from "../components/BlogCard";
-import Appbar from "../components/Appbar";
+import Layout from "../components/Layout";
 import { useBlogs } from "../hooks";
 import { formatTimestamp } from "../lib";
 
@@ -7,8 +7,7 @@ const Blogs = () => {
   const { blogs, loading } = useBlogs();
 
   return (
-    <div>
-      <Appbar />
+    <Layout>
       <div className='flex justify-center'>
         {!loading ? (
           <div>
@@ -30,7 +29,7 @@ const Blogs = () => {
           <div>loading...</div>
         )}
       </div>
-    </div>
+    </Layout>
   );
 };
 

@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Avatar } from "./BlogCard";
 import { HiOutlinePencilSquare } from "react-icons/hi2";
+import { BiUser } from "react-icons/bi";
+import { GoBookmark } from "react-icons/go";
+import { IoLogOutOutline } from "react-icons/io5";
 
 const Appbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,25 +60,28 @@ const Appbar = () => {
                 <li>
                   <a
                     href='#'
-                    className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'
+                    className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'
                   >
-                    Profile
+                    <BiUser fontSize={20} />
+                    <span className='ml-1'>Profile</span>
                   </a>
                 </li>
                 <li>
                   <a
                     href='#'
-                    className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'
+                    className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'
                   >
-                    Settings
+                    <GoBookmark fontSize={20} />
+                    <span className='ml-1'>Bookmark</span>
                   </a>
                 </li>
                 <li>
                   <a
                     href='#'
-                    className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'
+                    className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'
                   >
-                    Sign out
+                    <IoLogOutOutline fontSize={20} />
+                    <span className='ml-1'>Logout</span>
                   </a>
                 </li>
               </ul>
