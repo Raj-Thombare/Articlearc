@@ -40,7 +40,12 @@ const Appbar = () => {
               data-dropdown-placement='bottom'
             >
               <span className='sr-only'>Open user menu</span>
-              <Avatar name={"Raj"} size='big' font='bold' />
+              <Avatar
+                name={"Raj"}
+                size='w-8 h-8'
+                font='bold'
+                styles='text-base'
+              />
             </button>
             <div
               className={`z-50 absolute top-8 right-0 ${

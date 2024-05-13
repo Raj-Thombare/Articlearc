@@ -14,7 +14,7 @@ const Blog = () => {
   return (
     <Layout>
       <div className='w-screen h-full flex content-center items-center justify-center'>
-        {loading ? <FullBlog blog={blog} /> : <Spinner />}
+        {!loading ? <FullBlog blog={blog} /> : <Spinner />}
       </div>
     </Layout>
   );

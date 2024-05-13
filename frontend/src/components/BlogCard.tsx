@@ -20,7 +20,7 @@ export const BlogCard = ({
       <div className='p-4 border-b border-slate-200 pb-4 cursor-pointer w-screen max-w-screen-md break-words'>
         <div className='flex'>
           <div className='flex items-center'>
-            <Avatar name={authorName} />
+            <Avatar name={authorName} styles='text-xs' size='w-6 h-6' />
             <div className='font-normal pl-2 text-sm flex justify-center flex-col'>
               {authorName}
             </div>
@@ -50,21 +50,21 @@ export function Circle() {
 
 export function Avatar({
   name,
-  size = "small",
+  size,
   font = "light",
+  styles,
 }: {
   name: string;
-  size?: "small" | "big";
+  size?: string;
   font?: "bold" | "light";
+  styles?: string;
 }) {
   return (
     <div
-      className={`relative inline-flex items-center justify-center overflow-hidden bg-gray-600 rounded-full ${
-        size === "small" ? "w-6 h-6" : "w-8 h-8"
-      }`}
+      className={`relative inline-flex items-center justify-center overflow-hidden bg-gray-600 rounded-full ${size}`}
     >
       <span
-        className={`${size === "small" ? "text-xs" : "text-lg"} ${
+        className={`${styles} ${
           font === "light" ? "font-extralight" : "font-normal"
         } text-white`}
       >
