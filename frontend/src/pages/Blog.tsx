@@ -13,7 +13,11 @@ const Blog = () => {
 
   return (
     <Layout>
-      <div className='w-screen h-full flex content-center items-center justify-center'>
+      <div
+        className={`w-full ${
+          loading ? "h-[80vh]" : "h-full"
+        } flex content-center items-center justify-center`}
+      >
         {!loading ? <FullBlog blog={blog} /> : <Spinner />}
       </div>
     </Layout>
