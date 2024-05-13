@@ -24,7 +24,7 @@ const Appbar = () => {
         <div className='flex justify-between basis-20'>
           <button
             type='button'
-            className='flex flex-column items-center text-gray-500 hover:text-gray-900'
+            className='flex flex-column items-center text-gray-700 hover:text-gray-900'
           >
             <HiOutlinePencilSquare fontSize={24} />
             <span className='text-sm ml-1'>Write</span>

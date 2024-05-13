@@ -1,5 +1,6 @@
 import { BlogCard } from "../components/BlogCard";
 import Layout from "../components/Layout";
+import Skeleton from "../components/Skeleton";
 import { useBlogs } from "../hooks";
 import { formatTimestamp } from "../lib";
 
@@ -26,7 +27,11 @@ const Blogs = () => {
             })}
           </div>
         ) : (
-          <div>loading...</div>
+          <div>
+            <Skeleton />
+            <Skeleton />
+            <Skeleton />
+          </div>
         )}
       </div>
     </Layout>

@@ -19,7 +19,7 @@ export const BlogCard = ({
     <Link to={`/blog/${id}`}>
       <div className='p-4 border-b border-slate-200 pb-4 cursor-pointer w-screen max-w-screen-md break-words'>
         <div className='flex'>
-          <div className='flex items-baseline'>
+          <div className='flex items-center'>
             <Avatar name={authorName} />
             <div className='font-normal pl-2 text-sm flex justify-center flex-col'>
               {authorName}
@@ -32,7 +32,7 @@ export const BlogCard = ({
             {publishedDate}
           </div>
         </div>
-        <div className='text-xl font-bold pt-1'>{title}</div>
+        <div className='text-2xl font-bold py-2'>{title}</div>
         <div className='text-md font-normal'>
           {content.slice(0, 200) + "..."}
         </div>
