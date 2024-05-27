@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Avatar } from "./BlogCard";
 import { HiOutlinePencilSquare } from "react-icons/hi2";
 import { BiUser } from "react-icons/bi";
@@ -7,6 +8,8 @@ import { IoLogOutOutline } from "react-icons/io5";
 
 const Appbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     console.log(isOpen);
@@ -23,6 +26,9 @@ const Appbar = () => {
         </a>
         <div className='flex justify-between basis-20'>
           <button
+            onClick={() => {
+              navigate("/publish");
+            }}
             type='button'
             className='flex flex-column items-center text-gray-700 hover:text-gray-900'
           >
