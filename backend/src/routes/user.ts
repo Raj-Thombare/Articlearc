@@ -4,6 +4,7 @@ import { withAccelerate } from '@prisma/extension-accelerate';
 import { sign } from 'hono/jwt'
 import { hashPassword } from "../utils/hashPassword";
 import { signupInput, signinInput } from "@raj-thombare/medium-common-types";
+import { isAuth } from "../middleware/is-auth";
 
 export const userRouter = new Hono<{
     Bindings: {
@@ -11,6 +12,49 @@ export const userRouter = new Hono<{
         JWT_SECRET: string;
     }
 }>();
+
+userRouter.get('/:id', isAuth, async (c) => {
+
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    const id = c.req.param('id')
+
+    try {
+        const user = await prisma.user.findFirst({
+            where: { id: id },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                posts: {
+                    select: {
+                        id: true,
+                        title: true,
+                        content: true,
+                        createdAt: true,
+                        author: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        if (!user) {
+            c.status(404)
+            return c.json({ error: "user not found" })
+        }
+
+        return c.json({ user })
+    } catch (error) {
+        c.status(403);
+        return c.json({ error: "error while fetching user" })
+    }
+})
 
 userRouter.post('/signup', async (c) => {
 
@@ -52,7 +96,7 @@ userRouter.post('/signup', async (c) => {
 
         const token = await sign({ id: user.id }, c.env.JWT_SECRET);
 
-        return c.json({ token });
+        return c.json({ token, user });
     } catch (error) {
         c.status(403);
         return c.json({ error: "error while signing up" });
@@ -98,7 +142,7 @@ userRouter.post('/signin', async (c) => {
 
         const token = await sign({ id: user.id }, c.env.JWT_SECRET);
 
-        return c.json({ token });
+        return c.json({ token, user });
     } catch (error) {
         c.status(403);
         return c.json({ error: "error while signing in" });
