@@ -1,4 +1,4 @@
-import { Blog } from "../hooks";
+import { Blog } from "../lib/types";
 import { Avatar } from "./BlogCard";
 import { formatTimestamp } from "../lib";
 import { Circle } from "./BlogCard";

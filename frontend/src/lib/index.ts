@@ -8,3 +8,5 @@ export function formatTimestamp(timestamp: string) {
   const formattedDate = `${month} ${day}, ${year}`;
   return formattedDate;
 }
+
+

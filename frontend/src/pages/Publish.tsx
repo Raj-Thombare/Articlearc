@@ -3,6 +3,7 @@ import axios from "axios";
 import { BACKEND } from "../config";
 import { useNavigate } from "react-router-dom";
 import { ChangeEvent, useState } from "react";
+import Button from "../components/Button";
 
 const Publish = () => {
   const [title, setTitle] = useState("");
@@ -21,7 +22,7 @@ const Publish = () => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        },
+        }
       );
       navigate(`/post/${response.data.id}`);
     } catch (error) {
@@ -47,13 +48,13 @@ const Publish = () => {
               setDescription(e.target.value);
             }}
           />
-          <button
+          {/* <button
             onClick={publishPostHandler}
             type='submit'
-            className='mt-4 inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800'
-          >
+            className='mt-4 inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800'>
             Publish post
-          </button>
+          </button> */}
+          <Button onClick={publishPostHandler} label='Publish Article' />
         </div>
       </div>
     </Layout>

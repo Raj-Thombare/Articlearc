@@ -1,12 +1,10 @@
-import axios from "axios";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { SignupType } from "@raj-thombare/medium-common-types";
-import { BACKEND } from "../config";
 import Quote from "../components/Quote";
 import AuthHeader from "../components/AuthHeader";
 import LabelledInput from "../components/LabelledInput";
 import Button from "../components/Button";
+import { useAuth } from "../hooks/auth";
 
 const Signup = () => {
   const [postInput, setPostInput] = useState<SignupType>({
@@ -15,17 +13,7 @@ const Signup = () => {
     password: "",
   });
 
-  const navigate = useNavigate();
-
-  const signupHandler = async () => {
-    try {
-      const jwt = await axios.post(`${BACKEND}/api/v1/user/signup`, postInput);
-      localStorage.setItem("token", jwt.data.token);
-      navigate("/");
-    } catch (error) {
-      alert("Error sending request");
-    }
-  };
+  const { signup } = useAuth();
 
   return (
     <div className='grid grid-cols-1 lg:grid-cols-2'>
@@ -46,7 +34,7 @@ const Signup = () => {
                   }}
                 />
                 <LabelledInput
-                  label='Username'
+                  label='Email'
                   placeholder='Rajthombare@gmail.com'
                   onChange={(e) => {
                     setPostInput({
@@ -66,7 +54,12 @@ const Signup = () => {
                     });
                   }}
                 />
-                <Button label={"Sign up"} onClick={signupHandler} />
+                <Button
+                  label={"Sign up"}
+                  onClick={() =>
+                    signup(postInput.name, postInput.email, postInput.password)
+                  }
+                />
               </div>
             </div>
           </div>

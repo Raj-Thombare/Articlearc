@@ -61,15 +61,15 @@ export function Avatar({
 }) {
   return (
     <div
-      className={`relative inline-flex items-center justify-center overflow-hidden bg-gray-600 rounded-full ${size}`}
-    >
+      className={`relative inline-flex items-center justify-center overflow-hidden bg-gray-800 rounded-full ${size}`}>
       <span
         className={`${styles} ${
           font === "light" ? "font-extralight" : "font-normal"
-        } text-white`}
-      >
+        } text-white`}>
         {name[0]}
       </span>
     </div>
   );
 }
+
+

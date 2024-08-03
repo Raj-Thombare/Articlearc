@@ -4,19 +4,22 @@ import { Avatar } from "./BlogCard";
 import { BiUser } from "react-icons/bi";
 import { GoBookmark } from "react-icons/go";
 import { IoLogOutOutline } from "react-icons/io5";
+import { useAuth } from "../hooks/auth";
+import Button from "./Button";
 
 const Appbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
+  const { signout } = useAuth();
+
   const navigate = useNavigate();
 
   const toggleMenu = () => {
-    console.log(isOpen);
     setIsOpen((prev) => !prev);
   };
 
   return (
-    <nav className='bg-white text-black border-gray-200 border-b'>
+    <nav className='bg-white text-black border-gray-200 border-b sticky top-0 left-0 overflow-hidden z-50'>
       <div className='max-w-screen-xl flex flex-wrap items-center justify-between mx-auto py-3 px-5'>
         <a href='/' className='flex items-center rtl:space-x-reverse'>
           <img src='/logo.png' alt='article arc logo' width={30} height={30} />
@@ -25,14 +28,19 @@ const Appbar = () => {
           </span>
         </a>
         <div className='flex justify-between basis-20'>
-          <button
+          {/* <button
             onClick={() => {
               navigate("/publish");
             }}
             type='button'
-            className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-md px-5 py-1.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'>
-            Create
-          </button>
+            className='text-white bg-black hover:bg-black/90 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-md px-5 py-1.5 text-center'>
+            write
+          </button> */}
+          <Button
+            label='write'
+            style='text-base'
+            onClick={() => navigate("/publish")}
+          />
 
           <div className='flex relative items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse ml-3'>
             <button
@@ -67,7 +75,7 @@ const Appbar = () => {
               <ul className='py-2' aria-labelledby='user-menu-button'>
                 <li>
                   <a
-                    href='#'
+                    href='/profile'
                     className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'>
                     <BiUser fontSize={20} />
                     <span className='ml-1'>Profile</span>
@@ -75,18 +83,18 @@ const Appbar = () => {
                 </li>
                 <li>
                   <a
-                    href='#'
+                    href='/bookmarks'
                     className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'>
                     <GoBookmark fontSize={20} />
                     <span className='ml-1'>Bookmark</span>
                   </a>
                 </li>
-                <li>
+                <li onClick={() => signout()}>
                   <a
-                    href='#'
+                    href=''
                     className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'>
                     <IoLogOutOutline fontSize={20} />
-                    <span className='ml-1'>Logout</span>
+                    <span className='ml-1'>Sign out</span>
                   </a>
                 </li>
               </ul>

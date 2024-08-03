@@ -16,9 +16,8 @@ const AuthHeader = ({ type }: Props) => {
           : "Don't have an account?"}
         <Link
           to={type == "signup" ? "/signin" : "/signup"}
-          className='underline ps-1'
-        >
-          {type == "signup" ? "Login" : "Signup"}
+          className='underline ps-1'>
+          {type == "signup" ? "Signin" : "Signup"}
         </Link>
       </div>
     </div>

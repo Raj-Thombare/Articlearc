@@ -1,7 +1,7 @@
 import { BlogCard } from "../components/BlogCard";
 import Layout from "../components/Layout";
 import Skeleton from "../components/Skeleton";
-import { useBlogs } from "../hooks";
+import { useBlogs } from "../hooks/blog";
 import { formatTimestamp } from "../lib";
 
 const Blogs = () => {
@@ -28,6 +28,7 @@ const Blogs = () => {
           </div>
         ) : (
           <div>
+            <Skeleton />
             <Skeleton />
             <Skeleton />
             <Skeleton />
