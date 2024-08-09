@@ -121,12 +121,9 @@ userRouter.post('/signin', async (c) => {
             })
         }
 
-        const hashedInputPassword = await hashPassword(password);
-
         const user = await prisma.user.findFirst({
             where: {
                 email: email,
-                password: hashedInputPassword
             }
         })
 
@@ -135,9 +132,10 @@ userRouter.post('/signin', async (c) => {
             return c.json({ error: "User not found" })
         }
 
-        if (hashedInputPassword !== user?.password) {
-            c.status(401)
-            return c.json({ error: "Incorrect password" })
+        const hashedInputPassword = await hashPassword(password);
+        if (hashedInputPassword !== user.password) {
+            c.status(401);
+            return c.json({ error: "Incorrect password" });
         }
 
         const token = await sign({ id: user.id }, c.env.JWT_SECRET);
