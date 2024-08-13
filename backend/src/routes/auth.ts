@@ -4,7 +4,6 @@ import { withAccelerate } from '@prisma/extension-accelerate';
 import { sign } from 'hono/jwt'
 import { hashPassword } from "../utils/hashPassword";
 import { signupInput, signinInput } from "@raj-thombare/medium-common-types";
-import { isAuth } from "../middleware/is-auth";
 
 export const authRouter = new Hono<{
     Bindings: {
@@ -33,7 +32,7 @@ authRouter.post('/signin', async (c) => {
 
         const user = await prisma.user.findFirst({
             where: {
-                email: email,
+                email: email.toLowerCase(),
             },
         })
 
@@ -50,9 +49,9 @@ authRouter.post('/signin', async (c) => {
 
         const token = await sign({ id: user.id }, c.env.JWT_SECRET);
 
-        const { password: _, ...userWithoutPassword } = user;
+        const { password: _, ...userInfo } = user;
 
-        return c.json({ token, userWithoutPassword });
+        return c.json({ token, userInfo });
     } catch (error) {
         c.status(403);
         return c.json({ error: "error while signing in" });
@@ -79,7 +78,7 @@ authRouter.post('/signup', async (c) => {
 
         const existingUser = await prisma.user.findFirst({
             where: {
-                email: email
+                email: email.toLowerCase()
             }
         })
 
@@ -92,7 +91,7 @@ authRouter.post('/signup', async (c) => {
         const user = await prisma.user.create({
             data: {
                 name: name,
-                email: email,
+                email: email.toLowerCase(),
                 password: hashedPassword
             }
         })

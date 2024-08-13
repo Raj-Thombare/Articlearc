@@ -14,14 +14,15 @@ export const isAuth = createMiddleware(async (c, next) => {
 
         if (!payload) {
             c.status(401);
-            return c.json({ error: "unauthorized" });
+            return c.json({ error: "unauthorized: invalid token" });
         }
 
         c.set("userId", payload.id)
 
         await next();
     } catch (error) {
-        c.status(403)
+        console.error('JWT verification error:', error);
+        c.status(403);
         return c.json({ error: "you are not logged in" })
     }
 })

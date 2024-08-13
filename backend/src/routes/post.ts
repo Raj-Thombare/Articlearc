@@ -13,9 +13,8 @@ export const postRouter = new Hono<{
     }
 }>();
 
-postRouter.use('/*', isAuth);
-
-postRouter.post('/', async (c) => {
+//create post
+postRouter.post('/', isAuth, async (c) => {
 
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
@@ -38,6 +37,7 @@ postRouter.post('/', async (c) => {
                 title: body.title,
                 content: body.content,
                 authorId: userId,
+                category: body.category
             }
         })
 
@@ -50,10 +50,13 @@ postRouter.post('/', async (c) => {
     }
 })
 
-postRouter.put('/', async (c) => {
+//update post
+postRouter.put('/:id', isAuth, async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
+
+    const userId = c.get('userId');
 
     try {
         const body = await c.req.json();
@@ -67,7 +70,7 @@ postRouter.put('/', async (c) => {
         }
 
         const post = await prisma.post.update({
-            where: { id: body.id },
+            where: { id: userId },
             data: {
                 title: body.title,
                 content: body.content,
@@ -88,7 +91,87 @@ postRouter.put('/', async (c) => {
     }
 })
 
-postRouter.get('/bulk', async (c) => {
+//delete post
+postRouter.delete('/:id', isAuth, async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    const postId = c.req.param('id')
+
+    const userId = c.get('userId');
+
+    try {
+
+        const post = await prisma.post.findUnique({
+            where: { id: postId },
+        });
+
+        if (post?.authorId !== userId) {
+            c.status(403);
+            return c.json({ error: "forbidden: you can only delete your own posts" });
+        }
+
+        await prisma.post.delete({
+            where: { id: postId },
+        });
+
+        return c.json({ msg: "post deleted successfully" }, 200)
+    } catch (error) {
+        c.status(403);
+        return c.json({ error: "error while deleting post" })
+    }
+})
+
+//search posts
+postRouter.get('/', async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    try {
+        const query = c.req.query('search');
+
+        if (!query) {
+            c.status(400);
+            return c.json({ error: "Search query is required" });
+        }
+
+        const posts = await prisma.post.findMany({
+            where: {
+                OR: [
+                    {
+                        title: {
+                            contains: query,
+                            mode: 'insensitive',
+                        },
+                    },
+                    {
+                        content: {
+                            contains: query,
+                            mode: 'insensitive',
+                        },
+                    },
+                ],
+            },
+        });
+
+        if (posts.length === 0) {
+            c.status(404);
+            return c.json({ error: "Posts not found" });
+        }
+
+        return c.json({
+            posts,
+        }, 200)
+    } catch (error) {
+        c.status(403);
+        return c.json({ error: "error while searching posts" })
+    }
+})
+
+//get all posts
+postRouter.get('/all', async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
@@ -100,6 +183,7 @@ postRouter.get('/bulk', async (c) => {
                 title: true,
                 id: true,
                 createdAt: true,
+                category: true,
                 author: {
                     select: {
                         name: true
@@ -113,13 +197,14 @@ postRouter.get('/bulk', async (c) => {
             return c.json({ error: "posts not found" })
         }
 
-        return c.json({ posts })
+        return c.json({ posts }, 200)
     } catch (error) {
         c.status(403);
         return c.json({ error: "error while fetching posts" })
     }
 })
 
+//get post details
 postRouter.get('/:id', async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
@@ -135,6 +220,7 @@ postRouter.get('/:id', async (c) => {
                 title: true,
                 content: true,
                 createdAt: true,
+                category: true,
                 author: {
                     select: {
                         name: true
