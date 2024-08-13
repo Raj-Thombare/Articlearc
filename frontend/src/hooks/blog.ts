@@ -1,9 +1,6 @@
-// import { blogListQuery, blogQuery } from './../store/state';
-import { useRecoilState } from 'recoil';
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { BACKEND } from "../config";
-import { blogListState, blogState } from "../store/state";
 import { Blog } from '../lib/types';
 
 export const fetchBlogData = async (endpoint: string) => {
@@ -23,13 +20,16 @@ export const fetchBlogData = async (endpoint: string) => {
 };
 
 export const useBlogs = () => {
-    const [blogs, setBlogs] = useRecoilState<Blog[]>(blogListState);
+    const [blogs, setBlogs] = useState<Blog[]>([]);
     const [loading, setLoading] = useState(true);
 
     const fetchBlogs = async () => {
-        const data = await fetchBlogData('bulk');
-        setBlogs(data.posts)
-        setLoading(false)
+        const data = await fetchBlogData('all');
+        const sortedBlogs = data.posts.sort((a: Blog, b: Blog) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        setBlogs(sortedBlogs);
+        setLoading(false);
     }
 
     useEffect(() => {
@@ -40,7 +40,7 @@ export const useBlogs = () => {
 }
 
 export const useBlog = ({ id }: { id: string }) => {
-    const [blog, setBlog] = useRecoilState<Blog>(blogState);
+    const [blog, setBlog] = useState<Blog>();
     const [loading, setLoading] = useState(true);
 
     const fetchBlog = async () => {
@@ -55,26 +55,4 @@ export const useBlog = ({ id }: { id: string }) => {
 
     return { loading, blog }
 }
-
-// export const useBlogs = () => {
-//     const blogs = useRecoilValue(blogListQuery);
-//     const setBlogs = useSetRecoilState(blogListState);
-
-//     useEffect(() => {
-//         setBlogs(blogs);
-//     }, [blogs, setBlogs]);
-
-//     return { blogs };
-// };
-
-// export const useBlog = (id: string) => {
-//     const blog = useRecoilValue(blogQuery(id));
-//     const setBlog = useSetRecoilState(blogState);
-
-//     useEffect(() => {
-//         setBlog(blog);
-//     }, [blog, setBlog]);
-
-//     return { blog };
-// };
 

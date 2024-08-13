@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+body {
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: none;
+}
+
+.scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.editor .ql-editor {
+    font-size: 1.2rem;
+    outline: none;
+    /* padding: 0px !important; */
+}
+
+input {
+    outline: none;
+}

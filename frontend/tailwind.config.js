@@ -6,6 +6,9 @@ export default {
       fontFamily: {
         sans: ["ui-serif", "Georgia"],
       },
+      gridTemplateColumns: {
+        custom: "1.8fr 1fr",
+      },
     },
   },
   plugins: [],

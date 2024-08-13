@@ -1,8 +1,8 @@
 import { useParams } from "react-router-dom";
-import FullBlog from "../components/FullBlog";
+import FullBlog from "../components/blog/FullBlog";
 import { useBlog } from "../hooks/blog";
-import Layout from "../components/Layout";
-import Spinner from "../components/Spinner";
+import Layout from "../components/global/Layout";
+import Spinner from "../components/loader/Spinner";
 
 const Blog = () => {
   const { id } = useParams();
@@ -16,9 +16,8 @@ const Blog = () => {
       <div
         className={`w-full ${
           loading ? "h-[80vh]" : "h-full"
-        } flex content-center items-center justify-center`}
-      >
-        {!loading ? <FullBlog blog={blog} /> : <Spinner />}
+        } flex content-center items-center justify-center`}>
+        {!loading ? <FullBlog blog={blog!} /> : <Spinner />}
       </div>
     </Layout>
   );

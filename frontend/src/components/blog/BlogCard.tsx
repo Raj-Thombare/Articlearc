@@ -1,12 +1,5 @@
 import { Link } from "react-router-dom";
-
-interface BlogCardProps {
-  authorName: string;
-  title: string;
-  content: string;
-  publishedDate: string;
-  id: string;
-}
+import { AvatarProps, BlogCardProps } from "../../lib/types";
 
 export const BlogCard = ({
   id,
@@ -17,7 +10,7 @@ export const BlogCard = ({
 }: BlogCardProps) => {
   return (
     <Link to={`/blog/${id}`}>
-      <div className='p-4 border-b border-slate-200 pb-4 cursor-pointer w-screen max-w-screen-md break-words'>
+      <div className='p-4 border-b border-slate-200 pb-4 cursor-pointer max-w-[680px] break-words'>
         <div className='flex'>
           <div className='flex items-center'>
             <Avatar name={authorName} styles='text-xs' size='w-6 h-6' />
@@ -34,7 +27,7 @@ export const BlogCard = ({
         </div>
         <div className='text-2xl font-bold py-2'>{title}</div>
         <div className='text-md font-normal'>
-          {content.slice(0, 200) + "..."}
+          {content.slice(0, 150) + "..."}
         </div>
         <div className='text-slate-500 text-sm font-normal pt-4'>
           {`${Math.ceil(content.length / 100)} min read`}
@@ -48,28 +41,16 @@ export function Circle() {
   return <div className='h-[3px] w-[3px] rounded-full bg-slate-500'></div>;
 }
 
-export function Avatar({
-  name,
-  size,
-  font = "light",
-  styles,
-}: {
-  name: string;
-  size?: string;
-  font?: "bold" | "light";
-  styles?: string;
-}) {
+export function Avatar({ name, size, font = "light", styles }: AvatarProps) {
   return (
     <div
-      className={`relative inline-flex items-center justify-center overflow-hidden bg-gray-800 rounded-full ${size}`}>
+      className={`relative inline-flex items-center justify-center overflow-hidden bg-gray-100 rounded-full ${size}`}>
       <span
         className={`${styles} ${
           font === "light" ? "font-extralight" : "font-normal"
-        } text-white`}>
+        } text-gray-600`}>
         {name[0]}
       </span>
     </div>
   );
 }
-
-

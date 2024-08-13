@@ -1,6 +1,6 @@
-import { Blog } from "../lib/types";
+import { Blog } from "../../lib/types";
 import { Avatar } from "./BlogCard";
-import { formatTimestamp } from "../lib";
+import { formatTimestamp } from "../../lib";
 import { Circle } from "./BlogCard";
 
 const FullBlog = ({ blog }: { blog: Blog }) => {
@@ -9,11 +9,13 @@ const FullBlog = ({ blog }: { blog: Blog }) => {
     <div className='flex justify-center'>
       <div className='w-screen max-w-screen-md pt-12 px-5 break-words'>
         <div>
-          <div className='text-4xl font-extrabold pb-2'>{blog.title}</div>
+          <div className='text-2xl md:text-4xl font-bold pb-2'>
+            {blog.title}
+          </div>
           <div className='flex flex-col justify-between md:items-center md:flex-row'>
             <figcaption className='flex items-center my-4'>
               <Avatar
-                name='Raj'
+                name='Raj Thombare'
                 size='w-12 h-12'
                 font='bold'
                 styles='text-xl'
@@ -33,7 +35,9 @@ const FullBlog = ({ blog }: { blog: Blog }) => {
               </div>
             </div>
           </div>
-          <div className='pt-4 text-xl text-slate-800'>{blog.content}</div>
+          <div className='pt-4 text-lg md:text-xl font-light leading-none'>
+            {blog.content}
+          </div>
         </div>
       </div>
     </div>

@@ -6,18 +6,18 @@ interface Props {
 
 const AuthHeader = ({ type }: Props) => {
   return (
-    <div className='px-10'>
-      <div className='text-3xl font-extrabold mb-1'>
-        {type == "signup" ? "Create an account" : "Log in to your account"}
+    <div>
+      <div className='text-3xl font-extrabold mb-1 text-center'>
+        {type === "signup" ? "Create an account" : "Log in your account"}
       </div>
       <div className='text-slate-500 text-center'>
-        {type == "signup"
+        {type === "signup"
           ? "Already have an account?"
           : "Don't have an account?"}
         <Link
-          to={type == "signup" ? "/signin" : "/signup"}
+          to={type === "signup" ? "/signin" : "/signup"}
           className='underline ps-1'>
-          {type == "signup" ? "Signin" : "Signup"}
+          {type === "signup" ? "Signin" : "Signup"}
         </Link>
       </div>
     </div>
