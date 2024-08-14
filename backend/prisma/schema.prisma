@@ -19,7 +19,8 @@ model User {
   email     String   @unique
   name      String
   password  String
-  posts     Post[] 
+  posts     Post[]
+  bookmarks Bookmark[]
 }
 
 model Post {
@@ -29,6 +30,15 @@ model Post {
   published  Boolean @default(false)
   author     User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId   String
-  category   String
+  category   String[]
   createdAt  DateTime @default(now()) @db.Timestamptz(6)
+  bookmarks  Bookmark[]
+}
+
+model Bookmark {
+  userId     String
+  postId     String
+  user       User    @relation(fields: [userId], references: [id])
+  post       Post    @relation(fields: [postId], references: [id])
+  @@id([userId, postId]) // Composite primary key for userId and postId
 }

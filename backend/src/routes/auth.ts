@@ -98,7 +98,10 @@ authRouter.post('/signup', async (c) => {
 
         const token = await sign({ id: user.id }, c.env.JWT_SECRET);
 
-        return c.json({ token });
+        const { password: _, ...userInfo } = user;
+
+        return c.json({ token, userInfo });
+
     } catch (error) {
         c.status(403);
         return c.json({ error: "error while signing up" });
