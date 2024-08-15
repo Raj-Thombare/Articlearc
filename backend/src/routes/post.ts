@@ -43,7 +43,7 @@ postRouter.post('/', isAuth, async (c) => {
 
         return c.json({
             id: post.id
-        }, 201); // Changed to 201 Created
+        }, 201); 
     } catch (error) {
         c.status(500);
         return c.json({ error: "Error while creating post" });
@@ -122,56 +122,6 @@ postRouter.delete('/:id', isAuth, async (c) => {
     }
 });
 
-// Search posts
-postRouter.get('/', async (c) => {
-    const prisma = new PrismaClient({
-        datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate());
-
-    try {
-        const query = c.req.query('search');
-
-        if (!query) {
-            c.status(400); 
-            return c.json({ error: "Search query is required" });
-        }
-
-        const posts = await prisma.post.findMany({
-            where: {
-                OR: [
-                    {
-                        title: {
-                            contains: query,
-                            mode: 'insensitive',
-                        },
-                    },
-                    {
-                        content: {
-                            contains: query,
-                            mode: 'insensitive',
-                        },
-                    },
-                ],
-            },
-        });
-
-        if (posts.length === 0) {
-            c.status(200);
-            return c.json({
-                message: "No posts found",
-                posts: []
-            });
-        }
-
-        return c.json({
-            posts,
-        }, 200);
-    } catch (error) {
-        c.status(500);
-        return c.json({ error: "Error while searching posts" });
-    }
-});
-
 // Get all posts
 postRouter.get('/all', async (c) => {
     const prisma = new PrismaClient({
@@ -186,9 +136,10 @@ postRouter.get('/all', async (c) => {
                 id: true,
                 createdAt: true,
                 category: true,
+                authorId: true,
                 author: {
                     select: {
-                        name: true
+                        name: true,
                     }
                 }
             }
