@@ -24,21 +24,21 @@ authRouter.post('/signin', async (c) => {
 
         const { success } = signinInput.safeParse(body);
         if (!success) {
-            c.status(411);
+            c.status(400);
             return c.json({
                 message: "Inputs not correct"
-            })
+            });
         }
 
         const user = await prisma.user.findFirst({
             where: {
                 email: email.toLowerCase(),
             },
-        })
+        });
 
         if (!user) {
-            c.status(404)
-            return c.json({ error: "User not found" })
+            c.status(404);
+            return c.json({ error: "User not found" });
         }
 
         const hashedInputPassword = await hashPassword(password);
@@ -53,10 +53,10 @@ authRouter.post('/signin', async (c) => {
 
         return c.json({ token, userInfo });
     } catch (error) {
-        c.status(403);
-        return c.json({ error: "error while signing in" });
+        c.status(500);
+        return c.json({ error: "Error while signing in" });
     }
-})
+});
 
 authRouter.post('/signup', async (c) => {
 
@@ -70,17 +70,17 @@ authRouter.post('/signup', async (c) => {
 
         const { success } = signupInput.safeParse(body);
         if (!success) {
-            c.status(411);
+            c.status(400);
             return c.json({
                 message: "Inputs not correct"
-            })
+            });
         }
 
         const existingUser = await prisma.user.findFirst({
             where: {
                 email: email.toLowerCase()
             }
-        })
+        });
 
         if (existingUser) {
             c.status(409);
@@ -94,7 +94,7 @@ authRouter.post('/signup', async (c) => {
                 email: email.toLowerCase(),
                 password: hashedPassword
             }
-        })
+        });
 
         const token = await sign({ id: user.id }, c.env.JWT_SECRET);
 
@@ -103,7 +103,7 @@ authRouter.post('/signup', async (c) => {
         return c.json({ token, userInfo });
 
     } catch (error) {
-        c.status(403);
-        return c.json({ error: "error while signing up" });
+        c.status(500);
+        return c.json({ error: "Error while signing up" });
     }
-})
+});

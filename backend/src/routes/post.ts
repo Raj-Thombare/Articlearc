@@ -13,23 +13,23 @@ export const postRouter = new Hono<{
     }
 }>();
 
-//create post
+// Create post
 postRouter.post('/', isAuth, async (c) => {
-
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+    }).$extends(withAccelerate());
 
     const userId = c.get('userId');
+
     try {
         const body = await c.req.json();
-
         const { success } = createPostInput.safeParse(body);
+
         if (!success) {
-            c.status(411);
+            c.status(400); 
             return c.json({
                 message: "Inputs not correct"
-            })
+            });
         }
 
         const post = await prisma.post.create({
@@ -39,101 +39,100 @@ postRouter.post('/', isAuth, async (c) => {
                 authorId: userId,
                 category: body.category
             }
-        })
+        });
 
         return c.json({
             id: post.id
-        })
+        }, 201); // Changed to 201 Created
     } catch (error) {
-        c.status(403);
-        return c.json({ error: "error while creating post" })
+        c.status(500);
+        return c.json({ error: "Error while creating post" });
     }
-})
+});
 
-//update post
+// Update post
 postRouter.put('/:id', isAuth, async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+    }).$extends(withAccelerate());
 
     const userId = c.get('userId');
+    const postId = c.req.param('id');
 
     try {
         const body = await c.req.json();
-
         const { success } = updatePostInput.safeParse(body);
+
         if (!success) {
-            c.status(411);
+            c.status(400); 
             return c.json({
                 message: "Inputs not correct"
-            })
+            });
         }
 
         const post = await prisma.post.update({
-            where: { id: userId },
+            where: { id: postId },
             data: {
                 title: body.title,
                 content: body.content,
             }
-        })
+        });
 
         if (!post) {
-            c.status(404)
-            return c.json({ error: "post not found" })
+            c.status(404);
+            return c.json({ error: "Post not found" });
         }
 
         return c.json({
             id: post.id
-        })
+        });
     } catch (error) {
-        c.status(403);
-        return c.json({ error: "error while updating post" })
+        c.status(500);
+        return c.json({ error: "Error while updating post" });
     }
-})
+});
 
-//delete post
+// Delete post
 postRouter.delete('/:id', isAuth, async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+    }).$extends(withAccelerate());
 
-    const postId = c.req.param('id')
-
+    const postId = c.req.param('id');
     const userId = c.get('userId');
 
     try {
-
         const post = await prisma.post.findUnique({
             where: { id: postId },
         });
 
         if (post?.authorId !== userId) {
             c.status(403);
-            return c.json({ error: "forbidden: you can only delete your own posts" });
+            return c.json({ error: "Forbidden: You can only delete your own posts" });
         }
 
         await prisma.post.delete({
             where: { id: postId },
         });
 
-        return c.json({ msg: "post deleted successfully" }, 200)
+        return c.json({ msg: "Post deleted successfully" }, 200);
     } catch (error) {
-        c.status(403);
-        return c.json({ error: "error while deleting post" })
+        c.status(500);
+        return c.json({ error: "Error while deleting post" });
     }
-})
+});
 
-//search posts
+// Search posts
 postRouter.get('/', async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+    }).$extends(withAccelerate());
 
     try {
         const query = c.req.query('search');
 
         if (!query) {
-            c.status(400);
+            c.status(400); 
             return c.json({ error: "Search query is required" });
         }
 
@@ -157,24 +156,27 @@ postRouter.get('/', async (c) => {
         });
 
         if (posts.length === 0) {
-            c.status(404);
-            return c.json({ error: "Posts not found" });
+            c.status(200);
+            return c.json({
+                message: "No posts found",
+                posts: []
+            });
         }
 
         return c.json({
             posts,
-        }, 200)
+        }, 200);
     } catch (error) {
-        c.status(403);
-        return c.json({ error: "error while searching posts" })
+        c.status(500);
+        return c.json({ error: "Error while searching posts" });
     }
-})
+});
 
-//get all posts
+// Get all posts
 postRouter.get('/all', async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+    }).$extends(withAccelerate());
 
     try {
         const posts = await prisma.post.findMany({
@@ -192,29 +194,29 @@ postRouter.get('/all', async (c) => {
             }
         });
 
-        if (!posts) {
-            c.status(404)
-            return c.json({ error: "posts not found" })
+        if (!posts || posts.length === 0) {
+            c.status(404);
+            return c.json({ error: "Posts not found" });
         }
 
-        return c.json({ posts }, 200)
+        return c.json({ posts });
     } catch (error) {
-        c.status(403);
-        return c.json({ error: "error while fetching posts" })
+        c.status(500);
+        return c.json({ error: "Error while fetching posts" });
     }
-})
+});
 
-//get post details
+// Get post details
 postRouter.get('/:id', async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+    }).$extends(withAccelerate());
 
-    const id = c.req.param('id')
+    const postId = c.req.param('id');
 
     try {
         const post = await prisma.post.findFirst({
-            where: { id: id },
+            where: { id: postId },
             select: {
                 id: true,
                 title: true,
@@ -227,17 +229,16 @@ postRouter.get('/:id', async (c) => {
                     }
                 }
             }
-        })
+        });
 
         if (!post) {
-            c.status(404)
-            return c.json({ error: "post not found" })
+            c.status(404);
+            return c.json({ error: "Post not found" });
         }
 
-        return c.json({ post })
+        return c.json({ post });
     } catch (error) {
-        c.status(403);
-        return c.json({ error: "error while fetching post" })
+        c.status(500);
+        return c.json({ error: "Error while fetching post" });
     }
-})
-
+});

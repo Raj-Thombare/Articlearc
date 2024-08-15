@@ -10,41 +10,40 @@ export const userRouter = new Hono<{
     }
 }>();
 
-//delete user
+// Delete user
 userRouter.delete('/:id', isAuth, async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
 
-    const id = c.req.param('id')
+    const id = c.req.param('id');
     //@ts-ignore
     const userId = c.get('userId');
 
     try {
         if (id !== userId) {
             c.status(403);
-            return c.json({ error: "forbidden: you can only delete your own account" });
+            return c.json({ error: "Forbidden: you can only delete your own account" });
         }
 
         await prisma.user.delete({
             where: { id: id },
-        })
+        });
 
-        return c.json({ msg: "user deleted successfully" }, 200)
+        return c.json({ msg: "User deleted successfully" }, 200);
     } catch (error) {
-        c.status(403);
-        return c.json({ error: "error while deleting user" })
+        c.status(500); // Changed to 500 Internal Server Error for unexpected errors
+        return c.json({ error: "Error while deleting user" });
     }
-})
+});
 
-//get user details
+// Get user details
 userRouter.get('/:id', async (c) => {
-
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
 
-    const id = c.req.param('id')
+    const id = c.req.param('id');
 
     try {
         const user = await prisma.user.findFirst({
@@ -68,16 +67,16 @@ userRouter.get('/:id', async (c) => {
                     }
                 }
             }
-        })
+        });
 
         if (!user) {
-            c.status(404)
-            return c.json({ error: "user not found" })
+            c.status(404);
+            return c.json({ error: "User not found" });
         }
 
-        return c.json({ user }, 200)
+        return c.json({ user }, 200);
     } catch (error) {
-        c.status(403);
-        return c.json({ error: "error while fetching user" })
+        c.status(500); // Changed to 500 Internal Server Error for unexpected errors
+        return c.json({ error: "Error while fetching user" });
     }
-})
+});
