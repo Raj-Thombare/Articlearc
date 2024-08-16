@@ -193,3 +193,34 @@ postRouter.get('/:id', async (c) => {
         return c.json({ error: "Error while fetching post" });
     }
 });
+
+// Get posts by tag
+postRouter.get('/tag/:tag', async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    const tag = c.req.param('tag');
+
+    try {
+        const posts = await prisma.post.findMany({
+            where: {
+                category: {
+                    has: tag,
+                },
+            }
+        });
+
+        if (!posts) {
+            c.status(404);
+            return c.json({ error: "Posts not found" });
+        }
+
+        return c.json({ posts });
+    } catch (error) {
+        c.status(500);
+        return c.json({ error: "Error while fetching posts" });
+    }
+});
+
+

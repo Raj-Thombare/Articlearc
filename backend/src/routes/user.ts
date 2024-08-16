@@ -32,7 +32,7 @@ userRouter.delete('/:id', isAuth, async (c) => {
 
         return c.json({ msg: "User deleted successfully" }, 200);
     } catch (error) {
-        c.status(500); // Changed to 500 Internal Server Error for unexpected errors
+        c.status(500); 
         return c.json({ error: "Error while deleting user" });
     }
 });
@@ -76,7 +76,98 @@ userRouter.get('/:id', async (c) => {
 
         return c.json({ user }, 200);
     } catch (error) {
-        c.status(500); // Changed to 500 Internal Server Error for unexpected errors
+        c.status(500);
         return c.json({ error: "Error while fetching user" });
     }
 });
+
+//remove saved post
+userRouter.delete('/:id/bookmark', isAuth, async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    //@ts-ignore
+    const userId = c.get('userId');
+
+    try {
+        const { postId } = await c.req.json();
+
+        await prisma.bookmark.delete({
+            where: {
+                userId_postId: {
+                    userId: userId,
+                    postId: postId,
+                },
+            }
+        })
+
+        return c.json({ msg: "post removed successfully" }, 200);
+    } catch (error) {
+        console.error('Error while saving post:', error);
+
+        c.status(500);
+        return c.json({ error: "Error while removing post" });
+    }
+})
+
+//save users post
+userRouter.post('/:id/bookmark', isAuth, async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    try {
+        const { userId, postId } = await c.req.json();
+
+        await prisma.bookmark.create({
+            data: {
+                userId: userId,
+                postId: postId,
+            },
+        })
+        return c.json({ msg: "post saved successfully" }, 200);
+    } catch (error) {
+        c.status(500);
+        return c.json({ error: "Error while saving post" });
+    }
+})
+
+//get saved post
+userRouter.get('/:id/bookmarks', isAuth, async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    //@ts-ignore
+    const userId = c.get('userId');
+
+    try {
+        const savedPosts = await prisma.bookmark.findMany({
+            where: {
+                userId: userId
+            },
+            include: {
+                post: {
+                    select: {
+                        id: true,
+                        title: true,
+                        content: true,
+                        createdAt: true,
+                        category: true,
+                        author: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
+                },
+            }
+        })
+
+        return c.json({ "savedPosts": savedPosts }, 200);
+    } catch (error) {
+        c.status(500);
+        return c.json({ error: "Error fetching saved post" });
+    }
+})
