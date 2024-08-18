@@ -4,6 +4,9 @@ import Quote from "../components/auth/Quote";
 import AuthHeader from "../components/auth/AuthHeader";
 import LabelledInput from "../components/auth/LabelledInput";
 import Button from "../components/ui/Button";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
+import { useToast } from "../hooks/toast";
 
 const Signup = () => {
   const [postInput, setPostInput] = useState<SignupType>({
@@ -11,6 +14,26 @@ const Signup = () => {
     email: "",
     password: "",
   });
+
+  const navigate = useNavigate();
+
+  const { signup } = useAuthStore();
+
+  const { showToast } = useToast();
+
+  const signupHandler = async (
+    name: string,
+    email: string,
+    password: string
+  ) => {
+    try {
+      await signup(name, email, password);
+      showToast("Signed up successfully", "success");
+      navigate("/");
+    } catch (error) {
+      showToast(error.response.data.error, "error");
+    }
+  };
 
   return (
     <div className='grid grid-cols-1 lg:grid-cols-2'>
@@ -52,7 +75,13 @@ const Signup = () => {
               />
               <Button
                 label='Sign up'
-                onClick={() => {}}
+                onClick={() =>
+                  signupHandler(
+                    postInput.name!,
+                    postInput.email,
+                    postInput.password
+                  )
+                }
                 style='mt-4 w-full font-semibold text-white bg-gray-800 rounded-lg'
               />
             </div>

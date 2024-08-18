@@ -1,13 +1,11 @@
 import { ReactNode } from "react";
 import Appbar from "./Appbar";
-import Footer from "./Footer";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
-    <div className='flex flex-col min-h-[100vh]'>
+    <div className='block'>
       <Appbar />
-      <div className='flex-1 max-w-[1336px] mx-auto'>{children}</div>
-      <Footer />
+      <div className='max-w-[1336px] mx-auto my-6 md:my-12'>{children}</div>
     </div>
   );
 };

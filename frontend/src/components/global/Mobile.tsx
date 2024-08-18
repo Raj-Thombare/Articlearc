@@ -1,12 +1,29 @@
 import { Link } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore";
+import Button from "../ui/Button";
+import { useNavigate } from "react-router-dom";
 
-const Mobile = () => {
+interface Props {
+  searchTerm: string;
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  signoutHandler: () => void;
+}
+
+const Mobile = ({ searchTerm, setSearchTerm, signoutHandler }: Props) => {
+  const { user, isAuthenticated } = useAuthStore();
+
+  const navigate = useNavigate();
+
   return (
     <div
-      className='items-center flex-col justify-between w-full flex md:w-auto md:order-1'
+      className='bg-white z-50 items-center flex-col justify-between w-full flex md:w-auto md:order-1'
       id='navbar-search'>
       <div className='relative mt-3 md:hidden'>
-        <div className='absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none'>
+        <div
+          onClick={() => {
+            navigate(`/?query=${searchTerm}`);
+          }}
+          className='absolute inset-y-0 start-0 flex items-center ps-3 cursor-pointer'>
           <svg
             className='w-4 h-4 text-gray-500'
             aria-hidden='true'
@@ -25,6 +42,10 @@ const Mobile = () => {
         <input
           type='text'
           id='search-navbar'
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+          }}
           className='block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus-visible:outline-none'
           placeholder='Search...'
         />
@@ -38,28 +59,43 @@ const Mobile = () => {
             Home
           </Link>
         </li>
-        <li>
-          <Link
-            to='/profile'
-            className='block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0'
-            aria-current='page'>
-            Profile
-          </Link>
-        </li>
-        <li>
-          <Link
-            to='#'
-            className='block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0'>
-            Bookmark
-          </Link>
-        </li>
-        <li>
-          <Link
-            to='#'
-            className='block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0'>
-            Sign out
-          </Link>
-        </li>
+        {isAuthenticated && (
+          <li>
+            <Link
+              to={`/profile/${user?.id}`}
+              className='block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0'
+              aria-current='page'>
+              Profile
+            </Link>
+          </li>
+        )}
+        {isAuthenticated && (
+          <li>
+            <Link
+              to={`/profile/${user?.id}/saved`}
+              className='block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0'>
+              Saved
+            </Link>
+          </li>
+        )}
+        {isAuthenticated && (
+          <li onClick={signoutHandler}>
+            <Link
+              to='#'
+              className='block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0'>
+              Sign out
+            </Link>
+          </li>
+        )}
+        {!isAuthenticated && (
+          <li>
+            <Button
+              label='Sign in'
+              onClick={() => navigate("/signin")}
+              style='w-full font-semibold text-white bg-gray-800 rounded-lg'
+            />
+          </li>
+        )}
       </ul>
     </div>
   );

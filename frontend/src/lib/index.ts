@@ -1,4 +1,4 @@
-import { User } from "./types";
+import { Blog, User } from "./types";
 
 export function formatTimestamp(timestamp: string) {
   const date = new Date(timestamp);
@@ -9,6 +9,13 @@ export function formatTimestamp(timestamp: string) {
 
   const formattedDate = `${month} ${day}, ${year}`;
   return formattedDate;
+}
+
+export function sortBlogs(blogs: Blog[]) {
+  const sortedBlogs = blogs.sort((a: Blog, b: Blog) =>
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+  return sortedBlogs;
 }
 
 export const setToken = (token: string) => {

@@ -1,23 +1,25 @@
 import { useParams } from "react-router-dom";
 import FullBlog from "../components/blog/FullBlog";
-import { useBlog } from "../hooks/blog";
 import Layout from "../components/global/Layout";
 import Spinner from "../components/loader/Spinner";
+import { useBlogStore } from "../store/blogStore";
+import { useEffect } from "react";
 
 const Blog = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
+  const { blog, isLoading, fetchBlog } = useBlogStore();
 
-  const { blog, loading } = useBlog({
-    id: id || "",
-  });
+  useEffect(() => {
+    if (id) fetchBlog(id);
+  }, [id, fetchBlog]);
 
   return (
     <Layout>
       <div
         className={`w-full ${
-          loading ? "h-[80vh]" : "h-full"
+          isLoading ? "h-[80vh]" : "h-full"
         } flex content-center items-center justify-center`}>
-        {!loading ? <FullBlog blog={blog!} /> : <Spinner />}
+        {!isLoading && blog ? <FullBlog blog={blog!} /> : <Spinner />}
       </div>
     </Layout>
   );

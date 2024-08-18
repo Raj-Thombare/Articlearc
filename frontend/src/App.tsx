@@ -8,6 +8,8 @@ import Profile from "./pages/Profile";
 import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";
 import { Toaster } from "sonner";
+import Recommended from "./pages/Recommended";
+import Bookmark from "./pages/Bookmark";
 
 function App() {
   const { checkAuth } = useAuthStore();
@@ -23,8 +25,10 @@ function App() {
         <Route path='/signup' element={<Signup />} />
         <Route path='/signin' element={<Signin />} />
         <Route path='/new-article' element={<Publish />} />
-        <Route path='/profile' element={<Profile />} />
         <Route path='/blog/:id' element={<Blog />} />
+        <Route path='/tag/:tag' element={<Recommended />} />
+        <Route path='/profile/:id' element={<Profile />} />
+        <Route path='/profile/:id/saved' element={<Bookmark />} />
       </Routes>
       <Toaster />
     </>

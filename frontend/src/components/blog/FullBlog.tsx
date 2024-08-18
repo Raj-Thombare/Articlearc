@@ -1,5 +1,5 @@
 import { Blog } from "../../lib/types";
-import { Avatar } from "./BlogCard";
+import Avatar from "../ui/Avatar";
 import { formatTimestamp } from "../../lib";
 import { Circle } from "./BlogCard";
 
@@ -15,13 +15,13 @@ const FullBlog = ({ blog }: { blog: Blog }) => {
           <div className='flex flex-col justify-between md:items-center md:flex-row'>
             <figcaption className='flex items-center my-4'>
               <Avatar
-                name='Raj Thombare'
+                name={blog.author.name}
                 size='w-12 h-12'
                 font='bold'
                 styles='text-xl'
               />
               <div className='space-y-0.5 mt-0 font-medium text-left rtl:text-right ms-3'>
-                <div>Raj Thombare</div>
+                <div>{blog.author.name}</div>
                 <div className='text-gray-500'>Developer at Open AI</div>
               </div>
             </figcaption>

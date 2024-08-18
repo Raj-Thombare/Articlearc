@@ -1,25 +1,43 @@
 import { BlogCard } from "../components/blog/BlogCard";
 import Layout from "../components/global/Layout";
 import Skeleton from "../components/loader/Skeleton";
-import { useBlogs } from "../hooks/blog";
-import { formatTimestamp } from "../lib";
+import { formatTimestamp, sortBlogs } from "../lib";
+import { useBlogStore } from "../store/blogStore";
+import { BsBookmarkPlus } from "react-icons/bs";
+import UsersToFollow from "../components/user/UsersToFollow";
+import RecommendedTopics from "../components/RecommendedTopics ";
+import { useEffect } from "react";
+import Footer from "../components/global/Footer";
 
 const Home = () => {
-  const { blogs, loading } = useBlogs();
+  const { blogs, isLoading, fetchBlogs } = useBlogStore();
+
+  useEffect(() => {
+    fetchBlogs();
+  }, [fetchBlogs]);
+
+  let sortedBlogs;
+  if (blogs) {
+    sortedBlogs = sortBlogs(blogs);
+  }
+  const allTags = blogs.flatMap((blog) => blog.category);
+
+  const tags = [...new Set(allTags)];
 
   return (
     <Layout>
-      <div className='grid grid-cols-1 lg:grid-cols-custom md:space-x-4'>
-        <div className='flex justify-center pt-8 md:pt-12'>
-          {!loading ? (
-            <div>
-              {blogs.map((blog) => {
+      <div className='flex flex-col md:flex-row md:justify-evenly min-h-screen'>
+        <main className='flex-1 max-w-[728px]'>
+          {!isLoading ? (
+            <div className='px-4'>
+              {sortedBlogs?.map((blog) => {
                 const formatedDate = formatTimestamp(blog.createdAt);
                 return (
                   <BlogCard
                     key={blog.id}
                     id={blog.id}
                     authorName={blog.author.name}
+                    authorId={blog.authorId}
                     title={blog.title}
                     content={blog.content}
                     publishedDate={formatedDate}
@@ -35,28 +53,28 @@ const Home = () => {
               <Skeleton />
             </div>
           )}
-        </div>
-        <aside className='border-0 md:border-l border-slate-200 py-8 md:pt-12'>
-          <div className='px-8'>
-            <div className='p-4'>
-              <h3 className='font-semibold'>Recommended topics</h3>
-              <p className='block mt-4'>Science</p>
-              <p className='block mt-4'>Web3</p>
-              <p className='block mt-4'>Technology</p>
-              <p className='block mt-4'>Cryptocurrency</p>
-              <p className='block mt-4'>History</p>
-            </div>
-            <div className='mt-8 p-4'>
-              <h3 className='font-semibold'>Who to follow</h3>
-              <p className='block mt-4'>Rohit Sharma</p>
-              <p className='block mt-4'>harkirat Singh</p>
-              <p className='block mt-4'>Ed Sheeran</p>
-              <p className='block mt-4'>Micheal Collins</p>
-              <p className='block mt-4'>Robert Downy</p>
-            </div>
-            <div className='mt-8 font-semibold'>
-              Reading list Click the on any story to easily add it to your
-              reading list or a custom list that you can share.
+        </main>
+        <aside className='w-full max-w-full md:max-w-[368px] md:w-[368px] border-0 md:border-l border-slate-200 sticky h-fit top-16 md:pl-8 md:pr-4 md:flex md:flex-1 mx-auto md:mx-0'>
+          <div className='relative inline-block w-full h-full px-4'>
+            <div className='md:sticky top-70 h-fit md:min-h-[calc(100vh-70px)]'>
+              <div className='flex-1'>
+                <RecommendedTopics tags={tags} />
+                <UsersToFollow />
+                <div className='mt-8 px-4 md:px-0'>
+                  <h3 className='font-semibold pb-2'>Reading list</h3>
+                  <p>
+                    Click the
+                    <span className='inline-block mx-2'>
+                      <BsBookmarkPlus size={20} />
+                    </span>
+                    on any story to easily add it to your reading list or a
+                    custom list that you can share.
+                  </p>
+                </div>
+                <div className='mt-8'>
+                  <Footer />
+                </div>
+              </div>
             </div>
           </div>
         </aside>
