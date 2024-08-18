@@ -10,6 +10,33 @@ export const userRouter = new Hono<{
     }
 }>();
 
+//get users
+userRouter.get('/', async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+    try {
+        const users = await prisma.user.findMany({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+            }
+        });
+
+        if (!users) {
+            c.status(404);
+            return c.json({ error: "Users not found" });
+        }
+
+        return c.json({ users }, 200);
+    } catch (error) {
+        c.status(500);
+        return c.json({ error: "Error while fetching user" });
+    }
+});
+
 // Delete user
 userRouter.delete('/:id', isAuth, async (c) => {
     const prisma = new PrismaClient({
@@ -87,11 +114,8 @@ userRouter.delete('/:id/bookmark', isAuth, async (c) => {
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
 
-    //@ts-ignore
-    const userId = c.get('userId');
-
     try {
-        const { postId } = await c.req.json();
+        const { userId, postId } = await c.req.json();
 
         await prisma.bookmark.delete({
             where: {
