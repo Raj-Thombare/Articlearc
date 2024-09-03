@@ -68,7 +68,7 @@ userRouter.delete('/:id', isAuth, async (c) => {
 userRouter.get('/:id', async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+    }).$extends(withAccelerate());
 
     const id = c.req.param('id');
 
@@ -88,6 +88,7 @@ userRouter.get('/:id', async (c) => {
                         category: true,
                         author: {
                             select: {
+                                id: true,  
                                 name: true
                             }
                         }
@@ -108,54 +109,84 @@ userRouter.get('/:id', async (c) => {
     }
 });
 
+
 //remove saved post
 userRouter.delete('/:id/bookmark', isAuth, async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+    }).$extends(withAccelerate());
+
+    //@ts-ignore
+    const userId = c.get('userId');
 
     try {
-        const { userId, postId } = await c.req.json();
 
-        await prisma.bookmark.delete({
+        const { postId } = await c.req.json();
+
+        await prisma.bookmark.deleteMany({
             where: {
-                userId_postId: {
-                    userId: userId,
-                    postId: postId,
-                },
-            }
-        })
+                userId: userId,
+                postId: postId,
+            },
+        });
 
-        return c.json({ msg: "post removed successfully" }, 200);
+        const savedPosts = await prisma.bookmark.findMany({
+            where: { userId: userId },
+            include: { post: true },
+        });
+
+        return c.json({ savedPosts }, 200);
     } catch (error) {
-        console.error('Error while saving post:', error);
-
         c.status(500);
-        return c.json({ error: "Error while removing post" });
+        return c.json({ error: "Error while removing bookmark" });
     }
-})
+});
 
 //save users post
 userRouter.post('/:id/bookmark', isAuth, async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+    }).$extends(withAccelerate());
+
+    //@ts-ignore
+    const userId = c.get('userId');
 
     try {
-        const { userId, postId } = await c.req.json();
+        const { postId } = await c.req.json();
+
+        // Validate userId
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+        });
+
+        if (!user) {
+            return c.json({ error: "Invalid user ID" }, 400);
+        }
+
+        // Validate postId
+        const post = await prisma.post.findUnique({
+            where: { id: postId },
+        });
+
+        if (!post) {
+            return c.json({ error: "Invalid post ID" }, 400);
+        }
 
         await prisma.bookmark.create({
             data: {
                 userId: userId,
                 postId: postId,
             },
-        })
-        return c.json({ msg: "post saved successfully" }, 200);
+        });
+
+        return c.json({ msg: "Post saved successfully" }, 200);
     } catch (error) {
-        c.status(500);
-        return c.json({ error: "Error while saving post" });
+        console.error('Error while saving post:', error);
+        return c.json({ error: "Error while saving post" }, 500);
     }
-})
+});
+
+
 
 //get saved post
 userRouter.get('/:id/bookmarks', isAuth, async (c) => {
