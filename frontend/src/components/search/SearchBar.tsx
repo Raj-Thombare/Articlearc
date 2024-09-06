@@ -1,15 +1,19 @@
+import { RefObject } from "react";
+
 interface Props {
   toggleNav: () => void;
   searchTerm: string;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
-  setShowResults: React.Dispatch<React.SetStateAction<boolean>>;
+  handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  inputRef: RefObject<HTMLInputElement>;
 }
 
 const SearchBar = ({
   toggleNav,
   searchTerm,
   setSearchTerm,
-  setShowResults,
+  handleKeyDown,
+  inputRef,
 }: Props) => {
   return (
     <div className='flex flex-wrap items-center justify-between mx-auto'>
@@ -58,13 +62,12 @@ const SearchBar = ({
           <input
             type='text'
             id='search-navbar'
+            ref={inputRef}
             value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setShowResults(true);
-            }}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className='block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50'
             placeholder='Search...'
+            onKeyDown={handleKeyDown}
           />
         </div>
         <button

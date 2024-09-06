@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { SigninType } from "@raj-thombare/medium-common-types";
-import Quote from "../components/auth/Quote";
 import AuthHeader from "../components/auth/AuthHeader";
 import LabelledInput from "../components/auth/LabelledInput";
 import Button from "../components/ui/Button";
@@ -42,53 +41,46 @@ const Signin = () => {
   };
 
   return (
-    <div className='grid grid-cols-1 lg:grid-cols-2'>
-      <div>
-        <div className='h-screen flex justify-center items-center'>
-          <div className='w-full max-w-md px-10'>
-            <AuthHeader type='signin' />
-            <div className='pt-3'>
-              <LabelledInput
-                label='Email'
-                placeholder='Rajthombare@gmail.com'
-                value={postInput.email}
-                onChange={(e) => {
-                  setPostInput({
-                    ...postInput,
-                    email: e.target.value,
-                  });
-                }}
-              />
-              <LabelledInput
-                label='Password'
-                type='password'
-                placeholder='Enter your password'
-                value={postInput.password}
-                onChange={(e) => {
-                  setPostInput({
-                    ...postInput,
-                    password: e.target.value,
-                  });
-                }}
-              />
-              <Button
-                label='Sign in'
-                onClick={() =>
-                  signinHandler(postInput.email, postInput.password)
-                }
-                style='mt-4 w-full font-semibold text-white bg-gray-800 rounded-lg'
-              />
-              <Button
-                label='Test Credentials'
-                onClick={handleTestCredentials}
-                style='mt-4 w-full font-semibold text-white bg-gray-800 rounded-lg'
-              />
-            </div>
+    <div className='grid grid-cols-1 items-center mt-10'>
+      <div className='flex justify-center items-center'>
+        <div className='w-full max-w-md px-10'>
+          <AuthHeader type='signin' />
+          <div className='pt-3'>
+            <LabelledInput
+              label='Email'
+              placeholder='Rajthombare@gmail.com'
+              value={postInput.email}
+              onChange={(e) => {
+                setPostInput({
+                  ...postInput,
+                  email: e.target.value,
+                });
+              }}
+            />
+            <LabelledInput
+              label='Password'
+              type='password'
+              placeholder='Enter your password'
+              value={postInput.password}
+              onChange={(e) => {
+                setPostInput({
+                  ...postInput,
+                  password: e.target.value,
+                });
+              }}
+            />
+            <Button
+              label='Sign in'
+              onClick={() => signinHandler(postInput.email, postInput.password)}
+              style='mt-4 w-full font-semibold text-white bg-gray-800 rounded-lg'
+            />
+            <Button
+              label='Test Credentials'
+              onClick={handleTestCredentials}
+              style='mt-4 w-full font-semibold text-white bg-gray-800 rounded-lg'
+            />
           </div>
         </div>
-      </div>
-      <div className='hidden lg:block'>
-        <Quote />
       </div>
     </div>
   );

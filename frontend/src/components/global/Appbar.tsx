@@ -14,19 +14,21 @@ import { BACKEND } from "../../config";
 import axios from "axios";
 import useDebounce from "../../hooks/debounce";
 import SearchBar from "../search/SearchBar";
-import SearchResult from "../search/SearchResult";
+import SearchResultModal from "../search/SearchResultModal";
 import { Blog, User } from "../../lib/types";
 import Button from "../ui/Button";
 
 const Appbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [navOpen, setNavOpen] = useState(false);
+  const [mobNavOpen, setMobNavOpen] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [posts, setPosts] = useState<Blog[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showResults, setShowResults] = useState(false);
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -35,12 +37,16 @@ const Appbar = () => {
     ) {
       setShowResults(false);
     }
+
+    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      setIsOpen(false);
+      setMobNavOpen(false);
+    }
   };
 
   const navigate = useNavigate();
 
   const { signout, user, isAuthenticated } = useAuthStore();
-
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -57,6 +63,7 @@ const Appbar = () => {
       );
       setUsers(res.data.users);
       setPosts(res.data.posts);
+      setShowResults(true);
     }
   }, [debouncedSearchTerm]);
 
@@ -68,8 +75,8 @@ const Appbar = () => {
     setIsOpen((prev) => !prev);
   };
 
-  const toggleNav = () => {
-    setNavOpen((prev) => !prev);
+  const toggleMobNav = () => {
+    setMobNavOpen((prev) => !prev);
   };
 
   const signoutHandler = () => {
@@ -78,23 +85,41 @@ const Appbar = () => {
     navigate("/signin");
   };
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter" && searchTerm.trim()) {
+        navigate(`/search?query=${encodeURIComponent(searchTerm.trim())}`);
+        setShowResults(false);
+      }
+    },
+    [navigate, searchTerm]
+  );
+
   return (
     <nav className='bg-white h-[70px] text-black border-gray-[#f2f2f2] border-b sticky top-0 left-0 z-50'>
       <div className='max-w-screen-2xl flex flex-wrap items-center justify-between mx-auto py-3 px-4 md:px-8'>
-        <Link
-          to='/'
-          className='flex items-center flex-grow rtl:space-x-reverse'>
-          <img src='/logo.png' alt='article arc logo' width={60} height={60} />
-          <span className='hidden md:block self-center text-3xl font-bold whitespace-nowrap'>
-            ArticleArc
-          </span>
-        </Link>
+        <div>
+          <Link
+            to='/'
+            className='flex items-center flex-grow rtl:space-x-reverse'>
+            <img
+              src='/logo.png'
+              alt='article arc logo'
+              width={60}
+              height={60}
+            />
+            <span className='hidden md:block self-center text-3xl font-bold whitespace-nowrap'>
+              ArticleArc
+            </span>
+          </Link>
+        </div>
         <div className='flex justify-between items-center'>
           <SearchBar
-            setShowResults={setShowResults}
             searchTerm={searchTerm}
-            toggleNav={toggleNav}
+            toggleNav={toggleMobNav}
             setSearchTerm={setSearchTerm}
+            handleKeyDown={handleKeyDown}
+            inputRef={searchInputRef}
           />
           <div className='md:block hidden ml-8'>
             <button
@@ -135,59 +160,67 @@ const Appbar = () => {
                 />
               </button>
             )}
-            <div
-              className={`z-50 absolute top-8 right-0 ${
-                isOpen ? "block" : "hidden"
-              } my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow`}
-              id='user-dropdown'>
-              <div className='px-4 py-3'>
-                <span className='block text-md mt-1 font-semibold text-gray-900'>
-                  {user?.name}
-                </span>
-                <span className='block text-sm  text-gray-500 truncate'>
-                  {user?.email}
-                </span>
+            {isAuthenticated && (
+              <div
+                ref={menuRef}
+                className={`z-50 absolute top-8 right-0 ${
+                  isOpen ? "block" : "hidden"
+                } my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow`}
+                id='user-dropdown'>
+                <div className='px-4 py-3'>
+                  <span className='block text-md mt-1 font-semibold text-gray-900'>
+                    {user?.name}
+                  </span>
+                  <span className='block text-sm  text-gray-500 truncate'>
+                    {user?.email}
+                  </span>
+                </div>
+                <ul className='py-2' aria-labelledby='user-menu-button'>
+                  <li>
+                    <Link
+                      to={`/profile/${user?.id}`}
+                      className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'>
+                      <BiUser fontSize={20} />
+                      <span className='ml-1'>Profile</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to={`/profile/${user?.id}/saved`}
+                      className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'>
+                      <GoBookmark fontSize={20} />
+                      <span className='ml-1'>Saved</span>
+                    </Link>
+                  </li>
+                  <li onClick={signoutHandler}>
+                    <Link
+                      to=''
+                      className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'>
+                      <IoLogOutOutline fontSize={20} />
+                      <span className='ml-1'>Sign out</span>
+                    </Link>
+                  </li>
+                </ul>
               </div>
-              <ul className='py-2' aria-labelledby='user-menu-button'>
-                <li>
-                  <Link
-                    to={`/profile/${user?.id}`}
-                    className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'>
-                    <BiUser fontSize={20} />
-                    <span className='ml-1'>Profile</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to={`/profile/${user?.id}/saved`}
-                    className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'>
-                    <GoBookmark fontSize={20} />
-                    <span className='ml-1'>Saved</span>
-                  </Link>
-                </li>
-                <li onClick={signoutHandler}>
-                  <Link
-                    to=''
-                    className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'>
-                    <IoLogOutOutline fontSize={20} />
-                    <span className='ml-1'>Sign out</span>
-                  </Link>
-                </li>
-              </ul>
-            </div>
+            )}
           </div>
         </div>
       </div>
       {/* mobile menu */}
-      {navOpen && (
+      {mobNavOpen && (
         <Mobile
+          menuRef={menuRef}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           signoutHandler={signoutHandler}
         />
       )}
-      {showResults && (
-        <SearchResult resultsRef={resultsRef} posts={posts!} users={users!} />
+      {showResults && (users.length > 0 || posts.length > 0) && (
+        <SearchResultModal
+          resultsRef={resultsRef}
+          posts={posts}
+          users={users}
+        />
       )}
     </nav>
   );

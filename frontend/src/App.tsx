@@ -1,18 +1,21 @@
-import { Route, Routes } from "react-router-dom";
-import Signup from "./pages/Signup";
-import Signin from "./pages/Signin";
-import Blog from "./pages/Blog";
-import Home from "./pages/Home";
-import Publish from "./pages/Publish";
-import Profile from "./pages/Profile";
+import React from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";
 import { Toaster } from "sonner";
-import Recommended from "./pages/Recommended";
-import Bookmark from "./pages/Bookmark";
+import Layout from "./components/global/Layout";
+const Signup = React.lazy(() => import("./pages/Signup"));
+const Signin = React.lazy(() => import("./pages/Signin"));
+const Publish = React.lazy(() => import("./pages/Publish"));
+const Blog = React.lazy(() => import("./pages/Blog"));
+const Home = React.lazy(() => import("./pages/Home"));
+const Profile = React.lazy(() => import("./pages/Profile"));
+const Recommended = React.lazy(() => import("./pages/Recommended"));
+const Bookmark = React.lazy(() => import("./pages/Bookmark"));
+const Search = React.lazy(() => import("./pages/Search"));
 
 function App() {
-  const { checkAuth } = useAuthStore();
+  const { checkAuth, isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
@@ -20,17 +23,32 @@ function App() {
 
   return (
     <>
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/signup' element={<Signup />} />
-        <Route path='/signin' element={<Signin />} />
-        <Route path='/new-article' element={<Publish />} />
-        <Route path='/blog/:id' element={<Blog />} />
-        <Route path='/tag/:tag' element={<Recommended />} />
-        <Route path='/profile/:id' element={<Profile />} />
-        <Route path='/profile/:id/saved' element={<Bookmark />} />
-      </Routes>
-      <Toaster />
+      <React.Suspense fallback={<>...</>}>
+        <Layout>
+          <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path='/signup' element={<Signup />} />
+            <Route path='/signin' element={<Signin />} />
+            <Route
+              path='/new-article'
+              element={
+                isAuthenticated ? <Publish /> : <Navigate to='/signin' />
+              }
+            />
+            <Route path='/search' element={<Search />} />
+            <Route path='/blog/:id' element={<Blog />} />
+            <Route path='/tag/:tag' element={<Recommended />} />
+            <Route path='/profile/:id' element={<Profile />} />
+            <Route
+              path='/profile/:id/saved'
+              element={
+                isAuthenticated ? <Bookmark /> : <Navigate to='/signin' />
+              }
+            />
+          </Routes>
+          <Toaster />
+        </Layout>
+      </React.Suspense>
     </>
   );
 }

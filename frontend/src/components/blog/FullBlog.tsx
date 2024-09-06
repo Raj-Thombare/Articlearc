@@ -5,6 +5,7 @@ import { Circle } from "./BlogCard";
 
 const FullBlog = ({ blog }: { blog: Blog }) => {
   const formatedDate = formatTimestamp(blog.createdAt);
+
   return (
     <div className='flex justify-center'>
       <div className='w-screen max-w-screen-md pt-12 px-5 break-words'>
@@ -22,7 +23,9 @@ const FullBlog = ({ blog }: { blog: Blog }) => {
               />
               <div className='space-y-0.5 mt-0 font-medium text-left rtl:text-right ms-3'>
                 <div>{blog.author.name}</div>
-                <div className='text-gray-500'>Developer at Open AI</div>
+                <div className='text-gray-500'>
+                  @{blog.author.email?.replace(/@(gmail\.com|test\.com)$/, "")}
+                </div>
               </div>
             </figcaption>
             <div className='flex flex-col md:flex-row md:items-center'>

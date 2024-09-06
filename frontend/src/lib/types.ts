@@ -11,7 +11,9 @@ export interface Blog {
     authorId: string;
     category: string[];
     author: {
-        name: string
+        name: string;
+        id: string;
+        email: string;
     }
     createdAt: string
 }
@@ -23,6 +25,7 @@ export interface BlogCardProps {
     content: string;
     publishedDate: string;
     id: string;
+    bookmarks: Bookmark[] | null
 }
 
 export interface AuthState {
@@ -38,7 +41,7 @@ export interface AuthState {
 }
 
 export interface BlogsState {
-    blogs: Blog[];
+    blogs: Blog[] | null;
     blog: null;
     error: string | null;
     isLoading: boolean;
@@ -56,7 +59,7 @@ export interface UserState {
     user: User | null;
     users: User[] | null;
     posts: Blog[];
-    bookmarks: Bookmark[];
+    bookmarks: Bookmark[] | null;
     isLoading: boolean;
     error: string | null;
     fetchUser: (id: string) => void;

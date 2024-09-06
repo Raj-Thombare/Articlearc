@@ -1,7 +1,7 @@
 const Quote = () => {
   return (
     <div className='h-screen flex justify-center flex-col bg-slate-200 '>
-      <div className='flex justify-center'>
+      <div className='flex justify-center px-8'>
         <div className='max-w-lg'>
           <div className='text-3xl font-bold text-wrap'>
             "The customer support I received was exceptional. The support team

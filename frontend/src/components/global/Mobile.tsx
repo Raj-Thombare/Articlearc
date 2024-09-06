@@ -7,15 +7,24 @@ interface Props {
   searchTerm: string;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
   signoutHandler: () => void;
+  menuRef: React.RefObject<HTMLDivElement>;
+  // handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-const Mobile = ({ searchTerm, setSearchTerm, signoutHandler }: Props) => {
+const Mobile = ({
+  searchTerm,
+  setSearchTerm,
+  signoutHandler,
+  menuRef,
+}: // handleKeyDown,
+Props) => {
   const { user, isAuthenticated } = useAuthStore();
 
   const navigate = useNavigate();
 
   return (
     <div
+      ref={menuRef}
       className='bg-white z-50 items-center flex-col justify-between w-full flex md:w-auto md:order-1'
       id='navbar-search'>
       <div className='relative mt-3 md:hidden'>
@@ -41,6 +50,7 @@ const Mobile = ({ searchTerm, setSearchTerm, signoutHandler }: Props) => {
         </div>
         <input
           type='text'
+          // onKeyDown={handleKeyDown}
           id='search-navbar'
           value={searchTerm}
           onChange={(e) => {

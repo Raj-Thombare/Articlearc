@@ -5,7 +5,7 @@ import { BlogsState } from '../lib/types';
 import { getToken } from '../lib';
 
 export const useBlogStore = create<BlogsState>((set) => ({
-    blogs: [],
+    blogs: null,
     blog: null,
     bookmarks: [],
     isLoading: true,

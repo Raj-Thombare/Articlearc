@@ -1,4 +1,3 @@
-import Layout from "../components/global/Layout";
 import axios from "axios";
 import { BACKEND } from "../config";
 import { useNavigate } from "react-router-dom";
@@ -9,10 +8,10 @@ const Publish = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const navigate = useNavigate();
-  
+
   const publishPostHandler = async () => {
     try {
-      const {data} = await axios.post(
+      const { data } = await axios.post(
         `${BACKEND}/api/v1/post`,
         {
           title,
@@ -31,34 +30,31 @@ const Publish = () => {
   };
 
   return (
-    <Layout>
-      <div className='flex justify-center w-full px-5 pt-8'>
-        <div className='max-w-screen-md w-full'>
-          <input
-            onChange={(e) => {
-              setTitle(e.target.value);
-            }}
-            type='text'
-            className='w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5'
-            placeholder='Title'
-          />
+    <div className='flex justify-center w-full px-5'>
+      <div className='max-w-screen-md w-full'>
+        <input
+          onChange={(e) => {
+            setTitle(e.target.value);
+          }}
+          type='text'
+          className='w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5'
+          placeholder='Title'
+        />
 
-          <TextEditor
-            onChange={(e) => {
-              setDescription(e.target.value);
-            }}
-          />
-          <Button
-            label="Publish post"
-            size="text-lg"
-            font="text-base"
-            style="rounded-lg border border-gray-800 rounded-full px-4 py-2 hover:bg-gray-800 hover:text-white"
-            onClick={publishPostHandler}
-             />
-            
-        </div>
+        <TextEditor
+          onChange={(e) => {
+            setDescription(e.target.value);
+          }}
+        />
+        <Button
+          label='Publish post'
+          size='text-lg'
+          font='text-base'
+          style='rounded-lg border border-gray-800 rounded-full px-4 py-2 hover:bg-gray-800 hover:text-white'
+          onClick={publishPostHandler}
+        />
       </div>
-    </Layout>
+    </div>
   );
 };
 

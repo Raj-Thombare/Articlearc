@@ -1,12 +1,14 @@
+import { Link } from "react-router-dom";
 import Avatar from "../ui/Avatar";
 import Button from "../ui/Button";
 
 interface Props {
   name: string;
   username?: string;
+  id: string;
 }
 
-const UserProfileCard = ({ name, username }: Props) => {
+const UserProfileCard = ({ name, username, id }: Props) => {
   return (
     <div className='flex justify-between flex-shrink items-center my-2'>
       <div className='flex items-center flex-1 mr-1 md:mr-2'>
@@ -17,7 +19,9 @@ const UserProfileCard = ({ name, username }: Props) => {
           styles='text-xl'
         />
         <div className='space-y-0.5 ms-3'>
-          <div className='font-medium'>{name}</div>
+          <Link to={`/profile/${id}`} className='font-medium'>
+            {name}
+          </Link>
           <div className='text-gray-500 text-sm text-wrap h-fit'>
             @{username?.replace(/@(gmail\.com|test\.com)$/, "")}
           </div>

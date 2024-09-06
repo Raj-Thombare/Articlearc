@@ -5,14 +5,11 @@ import Avatar from "../ui/Avatar";
 interface Props {
   posts: Blog[];
   users: User[];
-  resultsRef: React.RefObject<HTMLDivElement>;
 }
 
-const SearchResult = ({ posts, users, resultsRef }: Props) => {
+const SearchResultModal = ({ posts, users }: Props) => {
   return (
-    <div
-      ref={resultsRef}
-      className='bg-white border shadow-lg w-[315px] absolute top-[114px] right-[136px] md:top-[52px] md:right-[135px] z-50 py-2 px-4'>
+    <div className='py-2 px-4'>
       {users.length > 0 || posts.length > 0 ? (
         <div className='px-1 py-4'>
           <div>
@@ -48,7 +45,7 @@ const SearchResult = ({ posts, users, resultsRef }: Props) => {
                     return (
                       <div key={user.id} className='text-base py-1'>
                         <Link
-                          to={`profile/${user.id}`}
+                          to={`/profile/${user.id}`}
                           className='flex items-center'>
                           <Avatar
                             name={user?.name || ""}
@@ -67,10 +64,10 @@ const SearchResult = ({ posts, users, resultsRef }: Props) => {
           </div>
         </div>
       ) : (
-        <div className=''>No result found</div>
+        <div className='text-xl'>No result found</div>
       )}
     </div>
   );
 };
 
-export default SearchResult;
+export default SearchResultModal;

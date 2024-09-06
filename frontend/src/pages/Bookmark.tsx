@@ -1,14 +1,12 @@
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
-import Layout from "../components/global/Layout";
-import Skeleton from "../components/loader/Skeleton";
 import { BlogCard } from "../components/blog/BlogCard";
 import { formatTimestamp } from "../lib";
 import { useUserStore } from "../store/userStore";
+import Spinner from "../components/loader/Spinner";
 
 const Bookmark = () => {
   const { id } = useParams();
-
   const { bookmarks, fetchBookmarks, isLoading } = useUserStore();
 
   useEffect(() => {
@@ -16,49 +14,41 @@ const Bookmark = () => {
   }, [id, fetchBookmarks]);
 
   return (
-    <Layout>
-      <div className='grid grid-cols-1 lg:grid-cols-custom md:space-x-4'>
-        <div className='mt-8 md:mt-12'>
-          <h4 className='text-xl mb-4 font-semibold text-center'>
-            Saved Articles
-          </h4>
+    <div className='grid grid-cols-1 md:space-x-4'>
+      <h4 className='text-xl mb-4 font-semibold text-center'>Saved Articles</h4>
+      <div>
+        {!isLoading && bookmarks ? (
           <div>
-            {!isLoading ? (
+            {bookmarks.length > 0 ? (
               <div>
-                {bookmarks.length !== 0 ? (
-                  <div>
-                    {bookmarks.map((bookmark) => {
-                      const post = bookmark.post;
-                      const formatedDate = formatTimestamp(post.createdAt);
-                      return (
-                        <BlogCard
-                          key={post.id}
-                          id={post.id}
-                          authorName={post.author?.name}
-                          authorId={post.authorId}
-                          title={post.title}
-                          content={post.content}
-                          publishedDate={formatedDate}
-                        />
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className='text-center'>No Saved Articles</div>
-                )}
+                {bookmarks?.map((bookmark) => {
+                  const post = bookmark.post;
+                  const formattedDate = formatTimestamp(post.createdAt);
+                  return (
+                    <BlogCard
+                      key={post.id}
+                      id={post.id}
+                      authorName={post.author?.name}
+                      authorId={post.authorId}
+                      title={post.title}
+                      content={post.content}
+                      publishedDate={formattedDate}
+                      bookmarks={bookmarks}
+                    />
+                  );
+                })}
               </div>
             ) : (
-              <div>
-                <Skeleton />
-                <Skeleton />
-                <Skeleton />
-                <Skeleton />
-              </div>
+              <div className='text-center'>No Saved Articles</div>
             )}
           </div>
-        </div>
+        ) : (
+          <div className='h-[70vh] flex justify-center items-center'>
+            <Spinner />
+          </div>
+        )}
       </div>
-    </Layout>
+    </div>
   );
 };
 

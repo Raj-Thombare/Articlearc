@@ -34,7 +34,7 @@ const Footer = () => {
   ];
   return (
     <footer className='bg-white border-t'>
-      <div className='w-full mx-auto flex flex-col md:flex-row items-center justify-center md:items-center md:justify-between'>
+      <div className='w-full px-4 md:px-0 mx-auto flex flex-col md:flex-row items-center justify-center md:items-center md:justify-between'>
         <ul className='flex flex-wrap items-center mt-4 text-sm font-medium text-gray-500'>
           {footerLinks.map((item) => {
             return (

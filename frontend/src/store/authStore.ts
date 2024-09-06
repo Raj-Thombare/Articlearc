@@ -4,8 +4,6 @@ import { BACKEND } from "../config";
 import { AuthState } from "../lib/types";
 import { getToken, removeToken, setToken, setUser, removeUser, getUser } from "../lib";
 
-const API_URL = import.meta.env.MODE === "development" ? "http://127.0.0.1:8787" : `${BACKEND}`;
-
 export const useAuthStore = create<AuthState>((set) => ({
     user: null,
     isAuthenticated: false,
@@ -16,7 +14,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     signin: async (email: string, password: string) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/api/v1/auth/signin`, { email, password });
+            const response = await axios.post(`${BACKEND}/api/v1/auth/signin`, { email, password });
             setToken(response.data.token)
             setUser(response.data.userInfo)
             set({
@@ -34,7 +32,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     signup: async (name: string, email: string, password: string) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/api/v1/auth/signup`, { name, email, password });
+            const response = await axios.post(`${BACKEND}/api/v1/auth/signup`, { name, email, password });
             setToken(response.data.token)
             setUser(response.data.userInfo)
             set({
