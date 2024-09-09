@@ -4,6 +4,7 @@ import { withAccelerate } from '@prisma/extension-accelerate';
 import { sign } from 'hono/jwt'
 import { hashPassword } from "../utils/hashPassword";
 import { signupInput, signinInput } from "@raj-thombare/medium-common-types";
+import { extractUsername } from "../utils/username";
 
 export const authRouter = new Hono<{
     Bindings: {
@@ -67,7 +68,7 @@ authRouter.post('/signup', async (c) => {
     try {
         const body = await c.req.json();
         const { name, email, password } = body;
-
+        const username = extractUsername(email);
         const { success } = signupInput.safeParse(body);
         if (!success) {
             c.status(400);
@@ -92,6 +93,7 @@ authRouter.post('/signup', async (c) => {
             data: {
                 name: name,
                 email: email.toLowerCase(),
+                username: username,
                 password: hashedPassword
             }
         });

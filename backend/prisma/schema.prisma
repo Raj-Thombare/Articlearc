@@ -17,7 +17,8 @@ datasource db {
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
-  name      String
+  name      String    
+  username  String   @unique
   password  String
   posts     Post[]
   bookmarks Bookmark[]
@@ -30,7 +31,7 @@ model Post {
   published  Boolean @default(false)
   author     User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId   String
-  category   String[]
+  category   String[] 
   createdAt  DateTime @default(now()) @db.Timestamptz(6)
   bookmarks  Bookmark[]
 }
