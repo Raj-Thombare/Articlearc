@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate';
 import { isAuth } from "../middleware/is-auth";
 import { createPostInput, updatePostInput } from "@raj-thombare/medium-common-types";
+import { slugify } from "../utils/slugify";
 
 export const postRouter = new Hono<{
     Bindings: {
@@ -31,13 +32,13 @@ postRouter.post('/', isAuth, async (c) => {
                 message: "Inputs not correct"
             });
         }
-
+        const category = slugify(body.category);
         const post = await prisma.post.create({
             data: {
                 title: body.title,
                 content: body.content,
                 authorId: userId,
-                category: body.category
+                category: category
             }
         });
 

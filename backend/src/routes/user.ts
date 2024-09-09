@@ -79,6 +79,7 @@ userRouter.get('/:id', async (c) => {
                 id: true,
                 name: true,
                 email: true,
+                username: true,
                 posts: {
                     select: {
                         id: true,
