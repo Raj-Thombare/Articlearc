@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const Footer = () => {
+  const { pathname } = useLocation();
 
   const footerLinks = [
     {
@@ -33,7 +35,10 @@ const Footer = () => {
     },
   ];
   return (
-    <footer className='bg-white border-t'>
+    <footer
+      className={`${
+        pathname.startsWith("/profile") ? "hidden md:block" : "block"
+      }`}>
       <div className='w-full px-4 md:px-0 mx-auto flex flex-col md:flex-row items-center justify-center md:items-center md:justify-between'>
         <ul className='flex flex-wrap items-center mt-4 text-sm font-medium text-gray-500'>
           {footerLinks.map((item) => {

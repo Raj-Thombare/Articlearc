@@ -5,7 +5,7 @@ import { AuthState } from "../lib/types";
 import { getToken, removeToken, setToken, setUser, removeUser, getUser } from "../lib";
 
 export const useAuthStore = create<AuthState>((set) => ({
-    user: null,
+    authUser: null,
     isAuthenticated: false,
     error: null,
     isLoading: false,
@@ -19,7 +19,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             setUser(response.data.userInfo)
             set({
                 isAuthenticated: true,
-                user: response.data.userInfo,
+                authUser: response.data.userInfo,
                 error: null,
                 isLoading: false,
             });
@@ -37,7 +37,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             setUser(response.data.userInfo)
             set({
                 isAuthenticated: true,
-                user: response.data.userInfo,
+                authUser: response.data.userInfo,
                 error: null,
                 isLoading: false,
             });
@@ -50,16 +50,16 @@ export const useAuthStore = create<AuthState>((set) => ({
     signout: () => {
         removeToken();
         removeUser();
-        set({ isAuthenticated: false, user: null });
+        set({ isAuthenticated: false, authUser: null });
     },
 
     checkAuth: async () => {
         const token = getToken();
         const storedUser = getUser();
         if (token) {
-            set({ isAuthenticated: true, user: JSON.parse(storedUser!) });
+            set({ isAuthenticated: true, authUser: JSON.parse(storedUser!) });
         } else {
-            set({ isAuthenticated: false, user: null });
+            set({ isAuthenticated: false, authUser: null });
             removeToken();
             removeUser();
         }

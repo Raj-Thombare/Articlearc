@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { BlogCard } from "../components/blog/BlogCard";
-import { formatTimestamp } from "../lib";
+import { formatTimestamp } from "../utils";
 import { useUserStore } from "../store/userStore";
 import Spinner from "../components/loader/Spinner";
 
@@ -14,7 +14,7 @@ const Bookmark = () => {
   }, [id, fetchBookmarks]);
 
   return (
-    <div className='grid grid-cols-1 md:space-x-4'>
+    <div className='grid grid-cols-1 md:space-x-4 py-6 md:py-12'>
       <h4 className='text-xl mb-4 font-semibold text-center'>Saved Articles</h4>
       <div>
         {!isLoading && bookmarks ? (

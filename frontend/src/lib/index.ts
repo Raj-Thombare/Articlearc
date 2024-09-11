@@ -1,22 +1,4 @@
-import { Blog, User } from "./types";
-
-export function formatTimestamp(timestamp: string) {
-  const date = new Date(timestamp);
-
-  const month = date.toLocaleString("en-US", { month: "long" });
-  const day = date.getDate();
-  const year = date.getFullYear();
-
-  const formattedDate = `${month} ${day}, ${year}`;
-  return formattedDate;
-}
-
-export function sortBlogs(blogs: Blog[]) {
-  const sortedBlogs = blogs.sort((a: Blog, b: Blog) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-  return sortedBlogs;
-}
+import { User } from "./types";
 
 export const setToken = (token: string) => {
   localStorage.setItem("token", token);

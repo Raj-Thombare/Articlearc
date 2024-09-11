@@ -26,16 +26,20 @@ const Signup = () => {
     password: string
   ) => {
     try {
-      await signup(name, email, password);
-      showToast("Signed up successfully", "success");
-      navigate("/");
+      if (email && password && name) {
+        await signup(name, email, password);
+        showToast("Signed up successfully", "success");
+        navigate("/");
+      } else {
+        showToast("Please enter email and password", "warning");
+      }
     } catch (error) {
       showToast(error.response.data.error, "error");
     }
   };
 
   return (
-    <div className='grid grid-cols-1 items-center mt-10'>
+    <div className='grid grid-cols-1 items-center mt-10 py-6 md:py-12'>
       <div className='flex justify-center items-center'>
         <div className='w-full max-w-md px-10'>
           <AuthHeader type='signup' />

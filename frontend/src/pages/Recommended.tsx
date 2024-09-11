@@ -1,20 +1,21 @@
-import { Link, useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useBlogStore } from "../store/blogStore";
 import { BlogCard, Circle } from "../components/blog/BlogCard";
 import { useEffect } from "react";
-import { formatTimestamp } from "../lib";
+import { formatTimestamp, unslugify } from "../utils";
 import Button from "../components/ui/Button";
-import RecommendedTopics from "../components/search/RecommendedTopics ";
 import { useUserStore } from "../store/userStore";
+import Carousel from "../components/ui/Carousel";
+import Skeleton from "../components/loader/Skeleton";
 
 const Recommended = () => {
   const { tag } = useParams();
   const { pathname } = useLocation();
   const { fetchBlogs, blogs } = useBlogStore();
-  const { bookmarks } = useUserStore();
+  const { bookmarks, isLoading } = useUserStore();
 
   useEffect(() => {
-    if (blogs?.length === 0) {
+    if (!blogs) {
       fetchBlogs();
     }
   }, [fetchBlogs, blogs]);
@@ -25,14 +26,14 @@ const Recommended = () => {
   const tags = [...new Set(allTags)];
 
   return (
-    <>
-      <RecommendedTopics path={pathname} isActive={tag} tags={tags} />
+    <div className='py-6 md:py-12'>
+      <Carousel isActive={tag} tags={tags} path={pathname} />
       <div className='flex flex-col md:flex-row md:justify-evenly'>
         <div className='flex-1 max-w-full'>
-          <div className='text-xl mb-4 text-center flex flex-col justify-center items-center pb-4 border-b'>
-            <Link to={`/tag/${tag}`} className='font-bold text-4xl mb-4'>
-              {tag![0].toUpperCase() + tag?.slice(1, tag.length)}
-            </Link>
+          <div className='text-xl mb-4 text-center flex flex-col justify-center items-center pb-10 border-b'>
+            <p className='font-bold text-2xl md:text-4xl mb-4'>
+              {unslugify(tag![0].toUpperCase() + tag?.slice(1, tag.length))}
+            </p>
             <div className='flex'>
               <div className='pl-2 font-normal text-slate-500 text-base flex justify-center flex-col'>
                 Topic
@@ -41,13 +42,13 @@ const Recommended = () => {
                 <Circle />
               </div>
               <div className='pl-2 font-normal text-slate-500 text-base flex justify-center flex-col'>
-                8.1M Followers
+                {(Math.random() * (10 - 1) + 1).toFixed(1)}M Followers
               </div>
               <div className='flex justify-center flex-col pl-2'>
                 <Circle />
               </div>
               <div className='pl-2 font-normal text-slate-500 text-base flex justify-center flex-col'>
-                421k stories
+                {Math.floor(Math.random() * 999)}k stories
               </div>
             </div>
             <Button
@@ -59,25 +60,34 @@ const Recommended = () => {
             />
           </div>
           <div>
-            {filteredBlogs?.map((blog) => {
-              const formatedDate = formatTimestamp(blog.createdAt);
-              return (
-                <BlogCard
-                  key={blog.id}
-                  id={blog.id}
-                  title={blog.title}
-                  content={blog.content}
-                  publishedDate={formatedDate}
-                  authorId={blog.authorId}
-                  authorName={blog.author.name}
-                  bookmarks={bookmarks}
-                />
-              );
-            })}
+            {!isLoading ? (
+              <div className='px-4'>
+                {filteredBlogs?.map((blog) => {
+                  const formatedDate = formatTimestamp(blog.createdAt);
+                  return (
+                    <BlogCard
+                      key={blog.id}
+                      id={blog.id}
+                      authorName={blog.author.name}
+                      authorId={blog.authorId}
+                      title={blog.title}
+                      content={blog.content}
+                      publishedDate={formatedDate}
+                      bookmarks={bookmarks}
+                    />
+                  );
+                })}
+              </div>
+            ) : (
+              <div>
+                <Skeleton />
+                <Skeleton />
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

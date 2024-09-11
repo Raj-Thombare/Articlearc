@@ -17,7 +17,7 @@ export const BlogCard = memo(
     authorId,
     bookmarks,
   }: BlogCardProps) => {
-    const { user } = useAuthStore();
+    const { authUser } = useAuthStore();
 
     const { createBookmark, removeBookmark } = useUserStore();
 
@@ -30,13 +30,13 @@ export const BlogCard = memo(
     }, [id, bookmarks]);
 
     const addToBookmark = async () => {
-      if (!user?.id) {
+      if (!authUser?.id) {
         showToast("You need to be signed in to bookmark this post", "error");
         return;
       }
 
       try {
-        await createBookmark(user.id, id);
+        await createBookmark(authUser.id, id);
         setIsSaved(true);
         showToast("Post Saved", "success");
       } catch (error) {
@@ -45,13 +45,13 @@ export const BlogCard = memo(
     };
 
     const removeFromBookmark = async () => {
-      if (!user?.id) {
+      if (!authUser?.id) {
         showToast("You need to be signed in to remove bookmark", "error");
         return;
       }
 
       try {
-        await removeBookmark(user?.id!, id);
+        await removeBookmark(authUser?.id!, id);
         setIsSaved(false);
         showToast("Bookmark Removed", "success");
       } catch (error) {

@@ -30,7 +30,7 @@ const Publish = () => {
   };
 
   return (
-    <div className='flex justify-center w-full px-5'>
+    <div className='flex justify-center w-full px-5 py-6 md:py-12'>
       <div className='max-w-screen-md w-full'>
         <input
           onChange={(e) => {

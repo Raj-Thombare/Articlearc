@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Avatar from "../ui/Avatar";
 import { BiUser } from "react-icons/bi";
 import { GoBookmark } from "react-icons/go";
@@ -28,7 +28,9 @@ const Appbar = () => {
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const resultsRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const mobMenuRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const location = useLocation();
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -40,13 +42,20 @@ const Appbar = () => {
 
     if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
       setIsOpen(false);
+    }
+
+    if (
+      mobNavOpen &&
+      mobMenuRef.current &&
+      !mobMenuRef.current.contains(event.target as Node)
+    ) {
       setMobNavOpen(false);
     }
   };
 
   const navigate = useNavigate();
 
-  const { signout, user, isAuthenticated } = useAuthStore();
+  const { signout, authUser, isAuthenticated } = useAuthStore();
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -71,12 +80,22 @@ const Appbar = () => {
     fetchSearchResults();
   }, [fetchSearchResults]);
 
+  useEffect(() => {
+    if (isOpen) {
+      setIsOpen(false);
+    }
+
+    if (mobNavOpen) {
+      setMobNavOpen(false);
+    }
+  }, [location]);
+
   const toggleMenu = () => {
-    setIsOpen((prev) => !prev);
+    setIsOpen(!isOpen);
   };
 
   const toggleMobNav = () => {
-    setMobNavOpen((prev) => !prev);
+    setMobNavOpen((mobNavOpen) => !mobNavOpen);
   };
 
   const signoutHandler = () => {
@@ -96,8 +115,8 @@ const Appbar = () => {
   );
 
   return (
-    <nav className='bg-white h-[70px] text-black border-gray-[#f2f2f2] border-b sticky top-0 left-0 z-50'>
-      <div className='max-w-screen-2xl flex flex-wrap items-center justify-between mx-auto py-3 px-4 md:px-8'>
+    <nav className='bg-white h-[70px] w-full text-black border-gray-[#f2f2f2] border-b sticky top-0 left-0 z-50'>
+      <div className='max-w-screen-2xl md:max-w-screen-2xl flex flex-wrap items-center justify-between mx-auto py-3 px-4 md:px-8'>
         <div>
           <Link
             to='/'
@@ -108,7 +127,7 @@ const Appbar = () => {
               width={60}
               height={60}
             />
-            <span className='hidden md:block self-center text-3xl font-bold whitespace-nowrap'>
+            <span className='self-center text-3xl font-bold whitespace-nowrap tracking-tighter'>
               ArticleArc
             </span>
           </Link>
@@ -121,27 +140,37 @@ const Appbar = () => {
             handleKeyDown={handleKeyDown}
             inputRef={searchInputRef}
           />
-          <div className='md:block hidden ml-8'>
-            <button
-              className='text-lg text-black font-medium py-2 flex items-center mr-2 opacity-70 hover:opacity-100'
-              onClick={() => navigate("/new-article")}>
-              <IoCreateOutline size={25} />
-              write
-            </button>
-          </div>
           {isAuthenticated && (
-            <div className='mx-4 md:block hidden'>
+            <div className='md:block hidden ml-8'>
+              <button
+                className='text-lg text-black font-medium py-2 flex items-center mr-2 opacity-70 hover:opacity-100'
+                onClick={() => navigate("/new-article")}>
+                <IoCreateOutline size={25} />
+                write
+              </button>
+            </div>
+          )}
+          {isAuthenticated && (
+            <div className='mx-4 md:block hidden opacity-70 hover:opacity-100 cursor-pointer'>
               <GoBell size={22} />
             </div>
           )}
-
-          <div className='hidden md:flex relative items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse ml-3'>
+          <div
+            className='hidden md:flex relative items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse ml-3'
+            ref={menuRef}>
             {!isAuthenticated ? (
-              <Button
-                label='Sign in'
-                onClick={() => navigate("/signin")}
-                style='w-full font-semibold text-white bg-gray-800 rounded-lg'
-              />
+              <div className='flex items-center'>
+                <Button
+                  label='Sign in'
+                  onClick={() => navigate("/signin")}
+                  style='w-full font-semibold text-white bg-gray-800 rounded-lg mr-2'
+                />
+                <Button
+                  label='Sign up'
+                  onClick={() => navigate("/signup")}
+                  style='w-full font-semibold text-white bg-gray-800 rounded-lg'
+                />
+              </div>
             ) : (
               <button
                 onClick={toggleMenu}
@@ -153,7 +182,7 @@ const Appbar = () => {
                 data-dropdown-placement='bottom'>
                 <span className='sr-only'>Open user menu</span>
                 <Avatar
-                  name={user?.name || ""}
+                  name={authUser?.name || ""}
                   size='w-10 h-10'
                   font='bold'
                   styles='text-base'
@@ -169,16 +198,16 @@ const Appbar = () => {
                 id='user-dropdown'>
                 <div className='px-4 py-3'>
                   <span className='block text-md mt-1 font-semibold text-gray-900'>
-                    {user?.name}
+                    {authUser?.name}
                   </span>
                   <span className='block text-sm  text-gray-500 truncate'>
-                    {user?.email}
+                    {authUser?.email}
                   </span>
                 </div>
                 <ul className='py-2' aria-labelledby='user-menu-button'>
                   <li>
                     <Link
-                      to={`/profile/${user?.id}`}
+                      to={`/profile/${authUser?.id}`}
                       className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'>
                       <BiUser fontSize={20} />
                       <span className='ml-1'>Profile</span>
@@ -186,7 +215,7 @@ const Appbar = () => {
                   </li>
                   <li>
                     <Link
-                      to={`/profile/${user?.id}/saved`}
+                      to={`/profile/${authUser?.id}/saved`}
                       className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'>
                       <GoBookmark fontSize={20} />
                       <span className='ml-1'>Saved</span>
@@ -209,10 +238,11 @@ const Appbar = () => {
       {/* mobile menu */}
       {mobNavOpen && (
         <Mobile
-          menuRef={menuRef}
+          mobMenuRef={mobMenuRef}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           signoutHandler={signoutHandler}
+          handleKeyDown={handleKeyDown}
         />
       )}
       {showResults && (users.length > 0 || posts.length > 0) && (

@@ -2,6 +2,7 @@ export interface User {
     id: string;
     name: string;
     email: string;
+    username: string;
 }
 
 export interface Blog {
@@ -15,7 +16,7 @@ export interface Blog {
         id: string;
         email: string;
     }
-    createdAt: string
+    createdAt: string;
 }
 
 export interface BlogCardProps {
@@ -25,11 +26,11 @@ export interface BlogCardProps {
     content: string;
     publishedDate: string;
     id: string;
-    bookmarks: Bookmark[] | null
+    bookmarks: Bookmark[] | null;
 }
 
 export interface AuthState {
-    user: User | null;
+    authUser: User | null;
     isAuthenticated: boolean;
     error: string | null;
     isLoading: boolean;

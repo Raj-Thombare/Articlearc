@@ -60,7 +60,7 @@ const SearchBar = ({
             <span className='sr-only'>Search icon</span>
           </div>
           <input
-            type='text'
+            type='search'
             id='search-navbar'
             ref={inputRef}
             value={searchTerm}

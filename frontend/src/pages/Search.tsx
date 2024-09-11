@@ -29,7 +29,7 @@ const Search = () => {
   }, [location.search]);
 
   return (
-    <div className='flex flex-col md:flex-row md:justify-evenly'>
+    <div className='flex flex-col md:flex-row md:justify-evenly py-6 md:py-12'>
       <main className='flex-1 max-w-[728px]'>
         <h1 className='text-3xl px-4 font-semibold text-gray-500'>
           Results for <span className='text-black'>{query}</span>

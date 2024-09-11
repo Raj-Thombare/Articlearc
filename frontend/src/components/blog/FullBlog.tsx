@@ -1,6 +1,6 @@
 import { Blog } from "../../lib/types";
 import Avatar from "../ui/Avatar";
-import { formatTimestamp } from "../../lib";
+import { formatTimestamp } from "../../utils";
 import { Circle } from "./BlogCard";
 
 const FullBlog = ({ blog }: { blog: Blog }) => {
@@ -8,7 +8,7 @@ const FullBlog = ({ blog }: { blog: Blog }) => {
 
   return (
     <div className='flex justify-center'>
-      <div className='w-screen max-w-screen-md pt-12 px-5 break-words'>
+      <div className='w-screen max-w-screen-md py-12 px-5 break-words'>
         <div>
           <div className='text-2xl md:text-4xl font-bold pb-2'>
             {blog.title}

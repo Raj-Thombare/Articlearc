@@ -13,6 +13,7 @@ const Profile = React.lazy(() => import("./pages/Profile"));
 const Recommended = React.lazy(() => import("./pages/Recommended"));
 const Bookmark = React.lazy(() => import("./pages/Bookmark"));
 const Search = React.lazy(() => import("./pages/Search"));
+const NotFound = React.lazy(() => import("./pages/NotFound"));
 
 function App() {
   const { checkAuth, isAuthenticated } = useAuthStore();
@@ -45,6 +46,7 @@ function App() {
                 isAuthenticated ? <Bookmark /> : <Navigate to='/signin' />
               }
             />
+            <Route path='*' element={<NotFound />} />
           </Routes>
           <Toaster />
         </Layout>

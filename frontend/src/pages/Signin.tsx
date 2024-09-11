@@ -24,9 +24,13 @@ const Signin = () => {
 
   const signinHandler = async (email: string, password: string) => {
     try {
-      await signin(email, password);
-      showToast("Signed in successfully", "success");
-      navigate("/");
+      if (email && password) {
+        await signin(email, password);
+        showToast("Signed in successfully", "success");
+        navigate("/");
+      } else {
+        showToast("Please enter email & password", "warning");
+      }
     } catch (error) {
       showToast(error.response.data.error, "error");
     }
@@ -41,7 +45,7 @@ const Signin = () => {
   };
 
   return (
-    <div className='grid grid-cols-1 items-center mt-10'>
+    <div className='grid grid-cols-1 items-center mt-10 py-6 md:py-12'>
       <div className='flex justify-center items-center'>
         <div className='w-full max-w-md px-10'>
           <AuthHeader type='signin' />
