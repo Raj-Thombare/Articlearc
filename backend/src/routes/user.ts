@@ -22,6 +22,7 @@ userRouter.get('/', async (c) => {
                 id: true,
                 name: true,
                 email: true,
+                username: true,
             }
         });
 
@@ -90,7 +91,8 @@ userRouter.get('/:id', async (c) => {
                         author: {
                             select: {
                                 id: true,  
-                                name: true
+                                name: true,
+                                username: true
                             }
                         }
                     }
