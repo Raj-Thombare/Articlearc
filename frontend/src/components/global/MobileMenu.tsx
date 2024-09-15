@@ -6,6 +6,7 @@ import { BiUser } from "react-icons/bi";
 import { IoLogOutOutline } from "react-icons/io5";
 import { IoCreateOutline } from "react-icons/io5";
 import { GoBookmark } from "react-icons/go";
+import { useEffect } from "react";
 
 interface Props {
   searchTerm: string;
@@ -13,23 +14,36 @@ interface Props {
   signoutHandler: () => void;
   mobMenuRef: React.RefObject<HTMLDivElement>;
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  handleClickOutside: (e: MouseEvent) => void;
+  mobNavOpen: boolean;
 }
 
-const Mobile = ({
+const MobileMenu = ({
   searchTerm,
   setSearchTerm,
   signoutHandler,
   mobMenuRef,
   handleKeyDown,
+  handleClickOutside,
+  mobNavOpen,
 }: Props) => {
   const { authUser, isAuthenticated } = useAuthStore();
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div
       ref={mobMenuRef}
-      className={`bg-white z-50 items-center flex-col justify-between w-full flex md:w-auto md:order-1`}
+      className={`${
+        mobNavOpen ? "flex" : "hidden"
+      } bg-white z-50 items-center flex-col justify-between w-full md:w-auto md:order-1`}
       id='navbar-search'>
       <div className='relative mt-3 md:hidden'>
         <div
@@ -64,7 +78,7 @@ const Mobile = ({
           placeholder='Search...'
         />
       </div>
-      <ul className='md:hidden w-auto flex items-start flex-col p-4 font-medium border-b rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white'>
+      <ul className='md:hidden w-auto flex items-start flex-col p-4 font-medium rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white'>
         {isAuthenticated && (
           <li>
             <Link
@@ -130,4 +144,4 @@ const Mobile = ({
   );
 };
 
-export default Mobile;
+export default MobileMenu;

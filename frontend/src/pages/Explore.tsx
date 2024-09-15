@@ -1,27 +1,26 @@
 import { useLocation, useParams } from "react-router-dom";
-import { useBlogStore } from "../store/blogStore";
-import { BlogCard, Circle } from "../components/blog/BlogCard";
+import { usePostStore } from "../store/postStore";
+import { PostCard, Circle } from "../components/post/PostCard";
 import { useEffect } from "react";
 import { formatTimestamp, unslugify } from "../utils";
 import Button from "../components/ui/Button";
 import { useUserStore } from "../store/userStore";
 import Carousel from "../components/ui/Carousel";
-import Skeleton from "../components/loader/Skeleton";
 
-const Recommended = () => {
+const Explore = () => {
   const { tag } = useParams();
   const { pathname } = useLocation();
-  const { fetchBlogs, blogs } = useBlogStore();
-  const { bookmarks, isLoading } = useUserStore();
+  const { fetchAllPosts, posts } = usePostStore();
+  const { bookmarks } = useUserStore();
 
   useEffect(() => {
-    if (!blogs) {
-      fetchBlogs();
+    if (!posts) {
+      fetchAllPosts();
     }
-  }, [fetchBlogs, blogs]);
+  }, [fetchAllPosts, posts]);
 
-  const filteredBlogs = blogs?.filter((blog) => blog.category.includes(tag!));
-  const allTags = blogs?.flatMap((blog) => blog.category);
+  const filteredposts = posts?.filter((post) => post.category.includes(tag!));
+  const allTags = posts?.flatMap((post) => post.category);
 
   const tags = [...new Set(allTags)];
 
@@ -60,30 +59,21 @@ const Recommended = () => {
             />
           </div>
           <div>
-            {!isLoading ? (
-              <div className='px-4'>
-                {filteredBlogs?.map((blog) => {
-                  const formatedDate = formatTimestamp(blog.createdAt);
-                  return (
-                    <BlogCard
-                      key={blog.id}
-                      id={blog.id}
-                      authorName={blog.author.name}
-                      authorId={blog.authorId}
-                      title={blog.title}
-                      content={blog.content}
-                      publishedDate={formatedDate}
-                      bookmarks={bookmarks}
-                    />
-                  );
-                })}
-              </div>
-            ) : (
-              <div>
-                <Skeleton />
-                <Skeleton />
-              </div>
-            )}
+            {filteredposts?.map((post) => {
+              const formatedDate = formatTimestamp(post.createdAt);
+              return (
+                <PostCard
+                  key={post.id}
+                  id={post.id}
+                  title={post.title}
+                  content={post.content}
+                  publishedDate={formatedDate}
+                  authorId={post.authorId}
+                  authorName={post.author.name}
+                  bookmarks={bookmarks}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
@@ -91,4 +81,4 @@ const Recommended = () => {
   );
 };
 
-export default Recommended;
+export default Explore;

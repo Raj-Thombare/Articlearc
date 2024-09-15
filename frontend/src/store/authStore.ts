@@ -1,10 +1,10 @@
 import { create } from "zustand";
 import axios from "axios";
 import { BACKEND } from "../config";
-import { AuthState } from "../lib/types";
+import { AuthStateType } from "../lib/types";
 import { getToken, removeToken, setToken, setUser, removeUser, getUser } from "../lib";
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthStateType>((set) => ({
     authUser: null,
     isAuthenticated: false,
     error: null,

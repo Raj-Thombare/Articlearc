@@ -7,10 +7,10 @@ import Layout from "./components/global/Layout";
 const Signup = React.lazy(() => import("./pages/Signup"));
 const Signin = React.lazy(() => import("./pages/Signin"));
 const Publish = React.lazy(() => import("./pages/Publish"));
-const Blog = React.lazy(() => import("./pages/Blog"));
+const Post = React.lazy(() => import("./pages/Post"));
 const Home = React.lazy(() => import("./pages/Home"));
 const Profile = React.lazy(() => import("./pages/Profile"));
-const Recommended = React.lazy(() => import("./pages/Recommended"));
+const Recommended = React.lazy(() => import("./pages/Explore"));
 const Bookmark = React.lazy(() => import("./pages/Bookmark"));
 const Search = React.lazy(() => import("./pages/Search"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
@@ -37,7 +37,7 @@ function App() {
               }
             />
             <Route path='/search' element={<Search />} />
-            <Route path='/blog/:id' element={<Blog />} />
+            <Route path='/post/:id' element={<Post />} />
             <Route path='/tag/:tag' element={<Recommended />} />
             <Route path='/profile/:id' element={<Profile />} />
             <Route

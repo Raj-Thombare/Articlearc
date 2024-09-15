@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
-import { BlogCard } from "../components/blog/BlogCard";
+import { PostCard } from "../components/post/PostCard";
 import { formatTimestamp } from "../utils";
 import { useUserStore } from "../store/userStore";
 import Spinner from "../components/loader/Spinner";
@@ -25,7 +25,7 @@ const Bookmark = () => {
                   const post = bookmark.post;
                   const formattedDate = formatTimestamp(post.createdAt);
                   return (
-                    <BlogCard
+                    <PostCard
                       key={post.id}
                       id={post.id}
                       authorName={post.author?.name}

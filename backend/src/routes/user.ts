@@ -23,6 +23,7 @@ userRouter.get('/', async (c) => {
                 name: true,
                 email: true,
                 username: true,
+                about: true
             }
         });
 
@@ -54,11 +55,11 @@ userRouter.delete('/:id', isAuth, async (c) => {
             return c.json({ error: "Forbidden: you can only delete your own account" });
         }
 
-        await prisma.user.delete({
+        const user = await prisma.user.delete({
             where: { id: id },
         });
 
-        return c.json({ msg: "User deleted successfully" }, 200);
+        return c.json({ user }, 204);
     } catch (error) {
         c.status(500); 
         return c.json({ error: "Error while deleting user" });
@@ -81,6 +82,7 @@ userRouter.get('/:id', async (c) => {
                 name: true,
                 email: true,
                 username: true,
+                about: true,
                 posts: {
                     select: {
                         id: true,
@@ -229,3 +231,33 @@ userRouter.get('/:id/bookmarks', isAuth, async (c) => {
         return c.json({ error: "Error fetching saved post" });
     }
 })
+
+//update user info
+userRouter.patch('/:id', isAuth, async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    //@ts-ignore
+    const userId = c.get('userId');
+
+    try {
+        const { name, email, about } = await c.req.json();
+
+        const update = await prisma.user.update({
+            where: { id: userId },
+            data: {
+                name: name || undefined,
+                email: email || undefined,
+                about: about || undefined,
+            }
+        })
+
+        const { password, ...updatedUser } = update;
+
+        return c.json({ updatedUser }, 200);
+    } catch (error) {
+        console.error('Error while updating user:', error);
+        return c.json({ error: "Error while updating" }, 500);
+    }
+});

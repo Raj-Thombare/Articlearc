@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Blog, User } from "../lib/types";
+import { Post, User } from "../lib/types";
 import { BACKEND } from "../config";
 import axios from "axios";
 import SearchResult from "../components/search/SearchResult";
@@ -8,7 +8,7 @@ import Spinner from "../components/loader/Spinner";
 
 const Search = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [posts, setPosts] = useState<Blog[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);

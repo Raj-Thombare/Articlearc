@@ -2,12 +2,11 @@ import { create } from 'zustand';
 import axios from 'axios';
 import { BACKEND } from '../config';
 import { getToken } from '../lib';
-import { UserState } from '../lib/types';
+import { UserStateType } from '../lib/types';
 
-export const useUserStore = create<UserState>((set) => ({
+export const useUserStore = create<UserStateType>((set) => ({
     user: null,
     users: null,
-    posts: [],
     bookmarks: null,
     isLoading: true,
     error: null,
@@ -19,7 +18,7 @@ export const useUserStore = create<UserState>((set) => ({
             const { data } = await axios.get(`${BACKEND}/api/v1/user/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            set({ user: data.user, posts: data.user.posts, isLoading: false });
+            set({ user: data.user, isLoading: false });
         } catch (error) {
             set({ error: 'Failed to fetch user', isLoading: false });
         }
@@ -47,7 +46,7 @@ export const useUserStore = create<UserState>((set) => ({
             });
             set({ bookmarks: data.savedPosts, isLoading: false });
         } catch (error) {
-            set({ error: 'Failed to fetch saved blogs', isLoading: false });
+            set({ error: 'Failed to fetch saved posts', isLoading: false });
         }
     },
 
@@ -92,6 +91,40 @@ export const useUserStore = create<UserState>((set) => ({
             set({ bookmarks: data.savedPosts, isLoading: false });
         } catch (error) {
             set({ error: 'Failed to remove bookmark', isLoading: false });
+        }
+    },
+
+    updateUser: async (userId: string, name: string, email: string, about: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            const token = getToken();
+            const { data } = await axios.patch(
+                `${BACKEND}/api/v1/user/${userId}`, { name, email, about },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+
+            set({ user: data.updatedUser, isLoading: false });
+        } catch (error) {
+            set({ error: 'Failed to update user', isLoading: false });
+        }
+    },
+
+    deleteUser: async (userId: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            const token = getToken();
+            const { data } = await axios.delete(
+                `${BACKEND}/api/v1/user/${userId}`,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+
+            set({ user: data.user, isLoading: false });
+        } catch (error) {
+            set({ error: 'Failed to delete user', isLoading: false });
         }
     }
 }))

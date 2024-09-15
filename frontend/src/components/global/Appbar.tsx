@@ -8,21 +8,21 @@ import { IoCreateOutline } from "react-icons/io5";
 import { GoBell } from "react-icons/go";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
-import { useToast } from "../../hooks/toast";
-import Mobile from "./Mobile";
+import { useToast } from "../../hooks/useToast";
+import Mobile from "./MobileMenu";
 import { BACKEND } from "../../config";
 import axios from "axios";
 import useDebounce from "../../hooks/debounce";
 import SearchBar from "../search/SearchBar";
 import SearchResultModal from "../search/SearchResultModal";
-import { Blog, User } from "../../lib/types";
+import { Post, User } from "../../lib/types";
 import Button from "../ui/Button";
 
 const Appbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [mobNavOpen, setMobNavOpen] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
-  const [posts, setPosts] = useState<Blog[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showResults, setShowResults] = useState(false);
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
@@ -128,14 +128,14 @@ const Appbar = () => {
               height={60}
             />
             <span className='self-center text-3xl font-bold whitespace-nowrap tracking-tighter'>
-              ArticleArc
+              Articlearc
             </span>
           </Link>
         </div>
         <div className='flex justify-between items-center'>
           <SearchBar
             searchTerm={searchTerm}
-            toggleNav={toggleMobNav}
+            toggleMobNav={toggleMobNav}
             setSearchTerm={setSearchTerm}
             handleKeyDown={handleKeyDown}
             inputRef={searchInputRef}
@@ -236,15 +236,15 @@ const Appbar = () => {
         </div>
       </div>
       {/* mobile menu */}
-      {mobNavOpen && (
-        <Mobile
-          mobMenuRef={mobMenuRef}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          signoutHandler={signoutHandler}
-          handleKeyDown={handleKeyDown}
-        />
-      )}
+      <Mobile
+        mobMenuRef={mobMenuRef}
+        mobNavOpen={mobNavOpen}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        signoutHandler={signoutHandler}
+        handleKeyDown={handleKeyDown}
+        handleClickOutside={handleClickOutside}
+      />
       {showResults && (users.length > 0 || posts.length > 0) && (
         <SearchResultModal
           resultsRef={resultsRef}

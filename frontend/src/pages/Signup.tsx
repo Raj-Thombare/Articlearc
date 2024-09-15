@@ -5,7 +5,7 @@ import LabelledInput from "../components/auth/LabelledInput";
 import Button from "../components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
-import { useToast } from "../hooks/toast";
+import { useToast } from "../hooks/useToast";
 
 const Signup = () => {
   const [postInput, setPostInput] = useState<SignupType>({

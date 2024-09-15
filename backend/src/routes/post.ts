@@ -111,7 +111,6 @@ postRouter.delete('/:id', isAuth, async (c) => {
             c.status(403);
             return c.json({ error: "Forbidden: You can only delete your own posts" });
         }
-
         await prisma.post.delete({
             where: { id: postId },
         });
@@ -119,6 +118,7 @@ postRouter.delete('/:id', isAuth, async (c) => {
         return c.json({ msg: "Post deleted successfully" }, 200);
     } catch (error) {
         c.status(500);
+        console.log(error)
         return c.json({ error: "Error while deleting post" });
     }
 });
@@ -157,6 +157,49 @@ postRouter.get('/all', async (c) => {
         return c.json({ error: "Error while fetching posts" });
     }
 });
+
+//get users post
+postRouter.get('/user/:userId', isAuth, async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    const userId = c.req.param('userId');
+
+    try {
+        const posts = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                posts: {
+                    select: {
+                        id: true,
+                        title: true,
+                        content: true,
+                        createdAt: true,
+                        category: true,
+                        author: {
+                            select: {
+                                id: true,
+                                name: true,
+                                username: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!posts) {
+            c.status(404);
+            return c.json({ error: "User posts not found" });
+        }
+
+        return c.json({ posts });
+    } catch (error) {
+        c.status(500);
+        return c.json({ error: "Error while fetching user posts" });
+    }
+})
 
 // Get post details
 postRouter.get('/:id', async (c) => {

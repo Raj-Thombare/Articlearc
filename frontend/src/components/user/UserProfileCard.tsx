@@ -31,7 +31,7 @@ const UserProfileCard = ({ name, username, id }: Props) => {
         label='Follow'
         size='sm'
         font='text-sm'
-        style='border border-gray-800 rounded-full px-4 py-2 hover:bg-gray-800 hover:text-white'
+        style='border border-gray-800 rounded-lg px-4 py-2 bg-gray-800 text-white hover:text-black hover:bg-white'
         onClick={() => {}}
       />
     </div>

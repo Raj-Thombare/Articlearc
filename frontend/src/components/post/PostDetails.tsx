@@ -1,30 +1,30 @@
-import { Blog } from "../../lib/types";
+import { Post } from "../../lib/types";
 import Avatar from "../ui/Avatar";
 import { formatTimestamp } from "../../utils";
-import { Circle } from "./BlogCard";
+import { Circle } from "./PostCard";
 
-const FullBlog = ({ blog }: { blog: Blog }) => {
-  const formatedDate = formatTimestamp(blog.createdAt);
+const PostDetails = ({ post }: { post: Post }) => {
+  const formatedDate = formatTimestamp(post.createdAt);
 
   return (
     <div className='flex justify-center'>
       <div className='w-screen max-w-screen-md py-12 px-5 break-words'>
         <div>
           <div className='text-2xl md:text-4xl font-bold pb-2'>
-            {blog.title}
+            {post.title}
           </div>
           <div className='flex flex-col justify-between md:items-center md:flex-row'>
             <figcaption className='flex items-center my-4'>
               <Avatar
-                name={blog.author.name}
+                name={post.author.name}
                 size='w-12 h-12'
                 font='bold'
                 styles='text-xl'
               />
               <div className='space-y-0.5 mt-0 font-medium text-left rtl:text-right ms-3'>
-                <div>{blog.author.name}</div>
+                <div>{post.author.name}</div>
                 <div className='text-gray-500'>
-                  @{blog.author.email?.replace(/@(gmail\.com|test\.com)$/, "")}
+                  @{post.author.email?.replace(/@(gmail\.com|test\.com)$/, "")}
                 </div>
               </div>
             </figcaption>
@@ -34,12 +34,12 @@ const FullBlog = ({ blog }: { blog: Blog }) => {
                 <Circle />
               </div>
               <div className='text-slate-500 ml-0 md:ml-2'>
-                {`${Math.ceil(blog.content.length / 100)} min read`}
+                {`${Math.ceil(post.content.length / 100)} min read`}
               </div>
             </div>
           </div>
-          <div className='pt-4 text-lg md:text-xl font-light leading-none'>
-            {blog.content}
+          <div className='pt-4 text-lg md:text-xl font-light'>
+            {post.content}
           </div>
         </div>
       </div>
@@ -47,4 +47,4 @@ const FullBlog = ({ blog }: { blog: Blog }) => {
   );
 };
 
-export default FullBlog;
+export default PostDetails;

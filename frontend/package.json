@@ -12,6 +12,7 @@
   "dependencies": {
     "@raj-thombare/medium-common-types": "^1.0.0",
     "axios": "^1.6.8",
+    "flowbite-react": "^0.10.1",
     "lodash.debounce": "^4.0.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

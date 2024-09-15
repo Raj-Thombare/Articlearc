@@ -1,6 +1,6 @@
-import { BlogCard } from "../components/blog/BlogCard";
+import { PostCard } from "../components/post/PostCard";
 import Skeleton from "../components/loader/Skeleton";
-import { useBlogStore } from "../store/blogStore";
+import { usePostStore } from "../store/postStore";
 import { BsBookmarkPlus } from "react-icons/bs";
 import UsersToFollow from "../components/user/UsersToFollow";
 import RecommendedTopics from "../components/search/RecommendedTopics ";
@@ -8,29 +8,29 @@ import { useEffect } from "react";
 import Aside from "../components/global/Aside";
 import { useUserStore } from "../store/userStore";
 import { useAuthStore } from "../store/authStore";
-import { formatTimestamp, sortBlogs } from "../utils";
+import { formatTimestamp, sortposts } from "../utils";
 
 const Home = () => {
-  const { blogs, isLoading, fetchBlogs } = useBlogStore();
+  const { posts, isLoading, fetchAllPosts } = usePostStore();
   const { fetchBookmarks, bookmarks } = useUserStore();
   const { authUser } = useAuthStore();
 
   useEffect(() => {
-    if (!blogs) {
-      fetchBlogs();
+    if (!posts) {
+      fetchAllPosts();
     }
 
     if (!bookmarks && authUser?.id) {
       fetchBookmarks(authUser?.id);
     }
-  }, [blogs, bookmarks]);
+  }, [posts, bookmarks]);
 
-  let sortedBlogs;
-  if (blogs) {
-    sortedBlogs = sortBlogs(blogs);
+  let sortedposts;
+  if (posts) {
+    sortedposts = sortposts(posts);
   }
 
-  const allTags = blogs?.flatMap((blog) => blog.category);
+  const allTags = posts?.flatMap((post) => post.category);
 
   const tags = [...new Set(allTags)];
 
@@ -39,16 +39,16 @@ const Home = () => {
       <main className='flex-1 max-w-[728px] md:py-12'>
         {!isLoading ? (
           <div className='px-4'>
-            {sortedBlogs?.map((blog) => {
-              const formatedDate = formatTimestamp(blog.createdAt);
+            {sortedposts?.map((post) => {
+              const formatedDate = formatTimestamp(post.createdAt);
               return (
-                <BlogCard
-                  key={blog.id}
-                  id={blog.id}
-                  authorName={blog.author.name}
-                  authorId={blog.authorId}
-                  title={blog.title}
-                  content={blog.content}
+                <PostCard
+                  key={post.id}
+                  id={post.id}
+                  authorName={post.author.name}
+                  authorId={post.authorId}
+                  title={post.title}
+                  content={post.content}
                   publishedDate={formatedDate}
                   bookmarks={bookmarks}
                 />

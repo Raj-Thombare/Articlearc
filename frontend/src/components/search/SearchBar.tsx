@@ -1,7 +1,7 @@
 import { RefObject } from "react";
 
 interface Props {
-  toggleNav: () => void;
+  toggleMobNav: () => void;
   searchTerm: string;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -9,7 +9,7 @@ interface Props {
 }
 
 const SearchBar = ({
-  toggleNav,
+  toggleMobNav,
   searchTerm,
   setSearchTerm,
   handleKeyDown,
@@ -20,7 +20,7 @@ const SearchBar = ({
       <div className='flex md:order-2'>
         <button
           type='button'
-          onClick={toggleNav}
+          // onClick={toggleMobNav}
           data-collapse-toggle='navbar-search'
           aria-controls='navbar-search'
           aria-expanded='false'
@@ -71,7 +71,7 @@ const SearchBar = ({
           />
         </div>
         <button
-          onClick={toggleNav}
+          onClick={toggleMobNav}
           data-collapse-toggle='navbar-search'
           type='button'
           className='inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none'

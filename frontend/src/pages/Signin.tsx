@@ -5,7 +5,7 @@ import LabelledInput from "../components/auth/LabelledInput";
 import Button from "../components/ui/Button";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "../hooks/toast";
+import { useToast } from "../hooks/useToast";
 
 const test_email = import.meta.env.VITE_TEST_USER_EMAIL;
 const test_password = import.meta.env.VITE_TEST_USER_PASSWORD;

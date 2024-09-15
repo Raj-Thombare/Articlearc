@@ -1,4 +1,4 @@
-import { Blog } from "../lib/types";
+import { Post } from "../lib/types";
 
 export function formatTimestamp(timestamp: string) {
     const date = new Date(timestamp);
@@ -11,11 +11,11 @@ export function formatTimestamp(timestamp: string) {
     return formattedDate;
 }
 
-export function sortBlogs(blogs: Blog[]) {
-    const sortedBlogs = blogs.sort((a: Blog, b: Blog) =>
+export function sortposts(posts: Post[]) {
+    const sortedposts = posts.sort((a: Post, b: Post) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
-    return sortedBlogs;
+    return sortedposts;
 }
 
 export const unslugify = (slug: string): string => {

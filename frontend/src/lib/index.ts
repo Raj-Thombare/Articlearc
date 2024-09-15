@@ -18,11 +18,6 @@ export const setUser = (user: User) => {
 
 export const getUser = (): string | null => {
   const userString = localStorage.getItem("user");
-
-  // if (userString === null) {
-  //   return null;
-  // }
-
   return userString;
 };
 

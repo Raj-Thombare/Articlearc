@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import { Blog, User } from "../../lib/types";
+import { Post, User } from "../../lib/types";
 import Avatar from "../ui/Avatar";
 
 interface Props {
-  posts: Blog[];
+  posts: Post[];
   users: User[];
   resultsRef: React.RefObject<HTMLDivElement>;
 }
@@ -21,11 +21,11 @@ const SearchResultModal = ({ posts, users, resultsRef }: Props) => {
                 ARTICLES
               </div>
               <div>
-                {posts.map((post: Blog) => {
+                {posts.map((post: Post) => {
                   return (
                     <div key={post.id} className='text-base py-1'>
                       <Link
-                        to={`/blog/${post.id}`}
+                        to={`/post/${post.id}`}
                         className='flex items-center'>
                         {post?.title}
                       </Link>

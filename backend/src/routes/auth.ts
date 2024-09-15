@@ -67,7 +67,7 @@ authRouter.post('/signup', async (c) => {
 
     try {
         const body = await c.req.json();
-        const { name, email, password } = body;
+        const { name, email, password, about } = body;
         const username = extractUsername(email);
         const { success } = signupInput.safeParse(body);
         if (!success) {
@@ -94,7 +94,8 @@ authRouter.post('/signup', async (c) => {
                 name: name,
                 email: email.toLowerCase(),
                 username: username,
-                password: hashedPassword
+                password: hashedPassword,
+                about: about
             }
         });
 
