@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
 import Footer from "./Footer";
+import React from "react";
 
-const Aside = ({ children }: { children: ReactNode }) => {
+const Aside = React.memo(({ children }: { children: ReactNode }) => {
   return (
     <aside className='w-full max-w-full md:max-w-[368px] md:w-[368px] border-0 md:border-l border-slate-200 flex flex-col-reverse md:sticky h-fit top-16 md:pl-8 md:pr-4 md:flex md:flex-1 mx-auto md:mx-0 md:py-12 pt-8'>
       <div className='relative inline-block w-full h-full px-4'>
@@ -14,6 +15,6 @@ const Aside = ({ children }: { children: ReactNode }) => {
       </div>
     </aside>
   );
-};
+});
 
 export default Aside;

@@ -12,7 +12,7 @@ import { useToast } from "../../hooks/useToast";
 import Mobile from "./MobileMenu";
 import { BACKEND } from "../../config";
 import axios from "axios";
-import useDebounce from "../../hooks/debounce";
+import useDebounce from "../../hooks/useDebounce";
 import SearchBar from "../search/SearchBar";
 import SearchResultModal from "../search/SearchResultModal";
 import { Post, User } from "../../lib/types";

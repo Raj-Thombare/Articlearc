@@ -23,7 +23,7 @@ const Home = () => {
     if (!bookmarks && authUser?.id) {
       fetchBookmarks(authUser?.id);
     }
-  }, [posts, bookmarks]);
+  }, [posts, bookmarks, fetchAllPosts, fetchBookmarks]);
 
   let sortedposts;
   if (posts) {

@@ -9,7 +9,7 @@ interface TabsProps {
 const Tabs: React.FC<TabsProps> = ({ activeTab, setActiveTab, isOwner }) => {
   return (
     <div className='w-full text-sm mb-4 font-medium text-center border-b text-gray-500 border-gray-200 dark:text-gray-400 dark:border-gray-700'>
-      <ul className='flex flex-wrap text-base font-bold text-center border-gray-200 dark:border-gray-700 dark:text-gray-400'>
+      <ul className='flex flex-wrap text-lg font-bold text-center border-gray-200 dark:border-gray-700 dark:text-gray-400'>
         <li className='w-[50%] grow'>
           <button
             onClick={() => setActiveTab("profile")}

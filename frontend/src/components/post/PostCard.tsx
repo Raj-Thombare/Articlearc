@@ -19,6 +19,7 @@ export const PostCard = memo(
     publishedDate,
     authorId,
     bookmarks,
+    isOwner,
   }: PostCardType) => {
     const { authUser } = useAuthStore();
     const { pathname } = useLocation();
@@ -35,7 +36,7 @@ export const PostCard = memo(
 
     const addToBookmark = async () => {
       if (!authUser?.id) {
-        showToast("You need to be signed in to bookmark this post", "error");
+        showToast("You need to be signed in to save this post", "error");
         return;
       }
 
@@ -44,22 +45,22 @@ export const PostCard = memo(
         setIsSaved(true);
         showToast("Post Saved", "success");
       } catch (error) {
-        showToast("Failed to save bookmark", "error");
+        showToast("Failed to save post", "error");
       }
     };
 
     const removeFromBookmark = async () => {
       if (!authUser?.id) {
-        showToast("You need to be signed in to remove bookmark", "error");
+        showToast("You need to be signed in to remove post", "error");
         return;
       }
 
       try {
         await removeBookmark(authUser?.id!, id);
         setIsSaved(false);
-        showToast("Bookmark Removed", "success");
+        showToast("Post Removed", "success");
       } catch (error) {
-        showToast("Failed to remove bookmark", "error");
+        showToast("Failed to remove post", "error");
       }
     };
 
@@ -103,7 +104,8 @@ export const PostCard = memo(
           </div>
           <div className='flex justify-end items-center w-28 md:w-32 space-x-5 md:space-x-10'>
             {pathname.startsWith("/profile") &&
-              !pathname.endsWith("/saved") && (
+              !pathname.endsWith("/saved") &&
+              isOwner && (
                 <>
                   <button>
                     <MdOutlineModeEdit
@@ -120,21 +122,23 @@ export const PostCard = memo(
                   </button>
                 </>
               )}
-            <button
-              className='cursor-pointer'
-              onClick={isSaved ? removeFromBookmark : addToBookmark}>
-              {isSaved ? (
-                <BsBookmarkFill
-                  className='opacity-100 hover:opacity-70'
-                  size={20}
-                />
-              ) : (
-                <BsBookmarkPlus
-                  className='opacity-70 hover:opacity-100'
-                  size={20}
-                />
-              )}
-            </button>
+            {pathname === "/" || pathname.endsWith("/saved") ? (
+              <button
+                className='cursor-pointer'
+                onClick={isSaved ? removeFromBookmark : addToBookmark}>
+                {isSaved ? (
+                  <BsBookmarkFill
+                    className='opacity-100 hover:opacity-70'
+                    size={20}
+                  />
+                ) : (
+                  <BsBookmarkPlus
+                    className='opacity-70 hover:opacity-100'
+                    size={20}
+                  />
+                )}
+              </button>
+            ) : null}
           </div>
         </div>
       </div>

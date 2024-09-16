@@ -14,7 +14,8 @@ import { usePostStore } from "../store/postStore";
 
 const Profile = () => {
   const { id } = useParams();
-  const { user, fetchUser, isLoading, bookmarks } = useUserStore();
+  const { user, fetchUser, isLoading, bookmarks, fetchBookmarks } =
+    useUserStore();
   const { fetchUserPosts, userPosts } = usePostStore();
   const { authUser } = useAuthStore();
 
@@ -24,6 +25,12 @@ const Profile = () => {
     if (id) fetchUser(id);
     if (id) fetchUserPosts(id);
   }, [id, fetchUser, fetchUserPosts]);
+
+  useEffect(() => {
+    if (!bookmarks && id) {
+      fetchBookmarks(id);
+    }
+  }, [id, bookmarks, fetchBookmarks]);
 
   const isOwner = authUser?.id === user?.id;
 
@@ -39,7 +46,7 @@ const Profile = () => {
               {userPosts?.length > 0 ? (
                 <div>
                   {userPosts?.map((post) => {
-                    const formatedDate = formatTimestamp(post.createdAt);
+                    const formattedDate = formatTimestamp(post.createdAt);
                     return (
                       <PostCard
                         key={post.id}
@@ -48,8 +55,9 @@ const Profile = () => {
                         authorId={post.author.id}
                         title={post.title}
                         content={post.content}
-                        publishedDate={formatedDate}
+                        publishedDate={formattedDate}
                         bookmarks={bookmarks}
+                        isOwner={isOwner}
                       />
                     );
                   })}
@@ -86,5 +94,6 @@ const Profile = () => {
     </div>
   );
 };
+
 
 export default Profile;

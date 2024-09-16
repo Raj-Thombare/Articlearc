@@ -28,6 +28,7 @@ export interface PostCardType {
     publishedDate: string;
     id: string;
     bookmarks: Bookmark[] | null;
+    isOwner?: boolean;
 }
 
 export interface AuthStateType {

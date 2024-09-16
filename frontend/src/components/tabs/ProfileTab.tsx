@@ -1,11 +1,11 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { useUserStore } from "../../store/userStore";
 import EditModal from "../modal/EditModal";
 import Avatar from "../ui/Avatar";
 import Button from "../ui/Button";
 
-const ProfileTab = () => {
+const ProfileTab = React.memo(() => {
   const { user } = useUserStore();
   const { authUser } = useAuthStore();
 
@@ -56,6 +56,6 @@ const ProfileTab = () => {
       <EditModal openModal={openModal} setOpenModal={setOpenModal} />
     </div>
   );
-};
+});
 
 export default ProfileTab;

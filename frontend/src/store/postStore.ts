@@ -58,11 +58,6 @@ export const usePostStore = create<PostStateType>((set) => ({
             await axios.delete(`${BACKEND}/api/v1/post/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            // set((state) => ({
-            //     posts: state.posts ? state.posts.filter((post) => post.id !== id) : null,
-            //     isLoading: false
-            // }));
-
         } catch (error) {
             set({ error: 'Failed to delete post', isLoading: false });
         }
