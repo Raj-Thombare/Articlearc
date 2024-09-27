@@ -1,7 +1,6 @@
 import { PostCard } from "../components/post/PostCard";
 import Skeleton from "../components/loader/Skeleton";
 import { usePostStore } from "../store/postStore";
-import { BsBookmarkPlus } from "react-icons/bs";
 import UsersToFollow from "../components/user/UsersToFollow";
 import RecommendedTopics from "../components/search/RecommendedTopics ";
 import { useEffect } from "react";
@@ -9,6 +8,7 @@ import Aside from "../components/global/Aside";
 import { useUserStore } from "../store/userStore";
 import { useAuthStore } from "../store/authStore";
 import { formatTimestamp, sortposts } from "../utils";
+import { AddBookmarkIcon } from "../assets/bookmark";
 
 const Home = () => {
   const { posts, isLoading, fetchAllPosts } = usePostStore();
@@ -69,11 +69,11 @@ const Home = () => {
         <UsersToFollow isLoading={isLoading} />
         {!isLoading ? (
           <div className='mt-8 px-4 md:px-0'>
-            <h3 className='font-semibold pb-2'>Reading list</h3>
-            <p>
+            <h3 className='font-bold pb-2 text-base'>Reading list</h3>
+            <p className='text-text text-sm'>
               Click the
               <span className='inline-block mx-2'>
-                <BsBookmarkPlus size={20} />
+                <AddBookmarkIcon />
               </span>
               on any story to easily add it to your reading list or a custom
               list that you can share.

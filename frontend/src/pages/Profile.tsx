@@ -40,7 +40,7 @@ const Profile = () => {
         <div>
           {!isLoading ? (
             <div>
-              <h4 className='text-xl mb-4 font-semibold text-center'>
+              <h4 className='text-xl mb-4 font-bold text-center'>
                 Published Articles
               </h4>
               {userPosts?.length > 0 ? (

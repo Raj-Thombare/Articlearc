@@ -1,4 +1,5 @@
 import { RefObject } from "react";
+import { useLocation } from "react-router-dom";
 
 interface Props {
   toggleMobNav: () => void;
@@ -6,6 +7,8 @@ interface Props {
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   inputRef: RefObject<HTMLInputElement>;
+  openPublishModal: () => void;
+  disableBtn: boolean;
 }
 
 const SearchBar = ({
@@ -14,13 +17,27 @@ const SearchBar = ({
   setSearchTerm,
   handleKeyDown,
   inputRef,
+  disableBtn,
+  openPublishModal,
 }: Props) => {
+  const { pathname } = useLocation();
   return (
     <div className='flex flex-wrap items-center justify-between mx-auto'>
-      <div className='flex md:order-2'>
+      <div className='flex items-center md:order-2'>
+        {pathname === "/new-article" && (
+          <button
+            disabled={disableBtn}
+            className={`${
+              disableBtn ? "opacity-50" : "opacity-100"
+            } text-sm text-white md:hidden bg-btn-primary font-medium px-3 py-1 flex items-center mr-2 rounded-full`}
+            onClick={openPublishModal}>
+            Publish
+          </button>
+        )}
+
         <button
           type='button'
-          // onClick={toggleMobNav}
+          onClick={toggleMobNav}
           data-collapse-toggle='navbar-search'
           aria-controls='navbar-search'
           aria-expanded='false'
@@ -65,7 +82,7 @@ const SearchBar = ({
             ref={inputRef}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className='block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50'
+            className='block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-0'
             placeholder='Search...'
             onKeyDown={handleKeyDown}
           />

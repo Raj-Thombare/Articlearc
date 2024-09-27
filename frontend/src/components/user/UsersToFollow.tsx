@@ -20,7 +20,7 @@ const UsersToFollow = ({ isLoading }: { isLoading: boolean }) => {
     <>
       {!isLoading ? (
         <div className='mt-8 px-4 md:px-0'>
-          <h3 className='font-semibold mb-4'>People to follow</h3>
+          <h3 className='font-bold mb-4 text-base'>People to follow</h3>
           <div className='flex flex-col gap-1 flex-wrap flex-shrink mb-4'>
             {filteredUsers?.slice(0, 5).map((user) => {
               return (
@@ -33,7 +33,7 @@ const UsersToFollow = ({ isLoading }: { isLoading: boolean }) => {
               );
             })}
           </div>
-          <Link to='/' className='text-green-600 hover:text-green-700'>
+          <Link to='/' className='text-green-600 hover:text-green-700 text-sm'>
             See more suggestions
           </Link>
         </div>

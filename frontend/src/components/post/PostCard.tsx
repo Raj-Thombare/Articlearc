@@ -1,7 +1,5 @@
 import { Link } from "react-router-dom";
 import { PostCardType } from "../../lib/types";
-import { BsBookmarkPlus, BsBookmarkFill } from "react-icons/bs";
-import { MdOutlineModeEdit, MdDeleteOutline } from "react-icons/md";
 import Avatar from "../ui/Avatar";
 import { useUserStore } from "../../store/userStore";
 import { useAuthStore } from "../../store/authStore";
@@ -9,6 +7,9 @@ import { useToast } from "../../hooks/useToast";
 import { memo, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { usePostStore } from "../../store/postStore";
+import { DeleteIcon } from "../../assets/delete";
+import { EditIcon } from "../../assets/edit";
+import { AddBookmarkIcon, BookmarkedIcon } from "../../assets/bookmark";
 
 export const PostCard = memo(
   ({
@@ -80,7 +81,7 @@ export const PostCard = memo(
           <Link to={`/profile/${authorId}`}>
             <div className='flex items-center'>
               <Avatar name={authorName} styles='text-xs' size='w-6 h-6' />
-              <div className='font-normal pl-2 text-sm flex justify-center flex-col'>
+              <div className='pl-2 font-medium text-sm flex justify-center flex-col text-nowrap'>
                 {authorName}
               </div>
             </div>
@@ -88,18 +89,20 @@ export const PostCard = memo(
           <div className='flex justify-center flex-col pl-2'>
             <Circle />
           </div>
-          <div className='pl-2 font-normal text-slate-500 text-sm flex justify-center flex-col'>
+          <div className='pl-2 font-normal text-text text-sm flex justify-center flex-col'>
             {publishedDate}
           </div>
         </div>
         <Link to={`/post/${id}`}>
-          <div className='text-lg md:text-2xl font-bold py-2'>{title}</div>
-          <div className='text-sm md:text-base font-normal'>
+          <div className='text-xl md:text-2xl font-extrabold py-2 tracking-tight'>
+            {title}
+          </div>
+          <div className='text-sm md:text-base font-medium text-text tracking-tight'>
             {content?.slice(0, 150) + "..."}
           </div>
         </Link>
         <div className='flex justify-between items-center pt-4 flex-wrap'>
-          <div className='text-slate-500 text-sm font-normal'>
+          <div className=' text-[13px] font-normal text-text bg-background rounded-full px-3 py-1 '>
             {`${Math.ceil(content.length / 100)} min read`}
           </div>
           <div className='flex justify-end items-center w-28 md:w-32 space-x-5 md:space-x-10'>
@@ -107,37 +110,30 @@ export const PostCard = memo(
               !pathname.endsWith("/saved") &&
               isOwner && (
                 <>
-                  <button>
-                    <MdOutlineModeEdit
-                      size={25}
-                      className='opacity-70 hover:opacity-100'
-                    />
+                  <button className='opacity-70 hover:opacity-100'>
+                    <EditIcon />
                   </button>
-                  <button>
-                    <MdDeleteOutline
-                      onClick={deletePostHandler}
-                      size={25}
-                      className='opacity-70 hover:opacity-100'
-                    />
+                  <button
+                    className='opacity-70 hover:opacity-100'
+                    onClick={deletePostHandler}>
+                    <DeleteIcon />
                   </button>
                 </>
               )}
             {pathname === "/" || pathname.endsWith("/saved") ? (
-              <button
+              <div
                 className='cursor-pointer'
                 onClick={isSaved ? removeFromBookmark : addToBookmark}>
                 {isSaved ? (
-                  <BsBookmarkFill
-                    className='opacity-100 hover:opacity-70'
-                    size={20}
-                  />
+                  <button className='opacity-100 hover:opacity-70'>
+                    <BookmarkedIcon />
+                  </button>
                 ) : (
-                  <BsBookmarkPlus
-                    className='opacity-70 hover:opacity-100'
-                    size={20}
-                  />
+                  <button className='opacity-70 hover:opacity-100'>
+                    <AddBookmarkIcon />
+                  </button>
                 )}
-              </button>
+              </div>
             ) : null}
           </div>
         </div>
@@ -147,5 +143,5 @@ export const PostCard = memo(
 );
 
 export function Circle() {
-  return <div className='h-[3px] w-[3px] rounded-full bg-slate-500'></div>;
+  return <div className='h-[3px] w-[3px] rounded-full bg-[#6B6B6B]'></div>;
 }

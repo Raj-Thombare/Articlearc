@@ -18,11 +18,13 @@ const UserProfileCard = ({ name, username, id }: Props) => {
           font='bold'
           styles='text-xl'
         />
-        <div className='space-y-0.5 ms-3'>
-          <Link to={`/profile/${id}`} className='font-medium'>
+        <div className='ms-3'>
+          <Link
+            to={`/profile/${id}`}
+            className='font-medium text-base tracking-tight'>
             {name}
           </Link>
-          <div className='text-gray-500 text-sm text-wrap h-fit'>
+          <div className='text-gray-500 font-normal text-sm text-wrap h-fit'>
             @{username?.replace(/@(gmail\.com|test\.com)$/, "")}
           </div>
         </div>
@@ -31,7 +33,7 @@ const UserProfileCard = ({ name, username, id }: Props) => {
         label='Follow'
         size='sm'
         font='text-sm'
-        style='border border-gray-800 rounded-lg px-4 py-2 bg-gray-800 text-white hover:text-black hover:bg-white'
+        style='border border-black-600 rounded-full px-4 py-2 bg-gray-800 text-white hover:text-slate-800 hover:bg-white'
         onClick={() => {}}
       />
     </div>

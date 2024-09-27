@@ -21,18 +21,18 @@ const RecommendedTopics = ({
             path?.startsWith("/tag") ? "mb-10" : "mt-8 md:mt-0 px-4 md:px-0"
           } `}>
           {!path?.startsWith("/tag") && (
-            <h3 className='font-semibold mb-4'>Recommended topics</h3>
+            <h3 className='font-bold mb-4 text-base'>Recommended topics</h3>
           )}
           <div
             className={`flex gap-2 flex-wrap mb-4 ${
               path?.startsWith("/tag") ? "justify-center" : ""
             }`}>
-            {tags.slice(0, 5).map((tag) => {
+            {tags.slice(0, 6).map((tag) => {
               return (
                 <Link
                   to={`/tag/${tag}`}
                   key={tag}
-                  className={`bg-gray-100 px-4 whitespace-nowrap py-1.5 rounded-full text-base cursor-pointer flex-wrap ${
+                  className={`bg-background text-sm font-medium px-4 whitespace-nowrap py-1.5 rounded-full cursor-pointer flex-wrap ${
                     isActive === tag ? "border border-gray-800" : ""
                   }`}>
                   {unslugify(tag)}
@@ -42,7 +42,7 @@ const RecommendedTopics = ({
           </div>
           <Link
             to='/tag/react'
-            className=' text-green-600 hover:text-green-700'>
+            className='text-green-600 hover:text-green-700 text-sm'>
             See more topics
           </Link>
         </div>

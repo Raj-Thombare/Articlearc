@@ -16,6 +16,7 @@ export interface Post {
         name: string;
         id: string;
         email: string;
+        username: string;
     }
     createdAt: string;
 }
@@ -49,6 +50,11 @@ export interface PostStateType {
     userPosts: Post[];
     error: string | null;
     isLoading: boolean;
+    title: string;
+    content: string;
+    setTitle: (title: string) => void;
+    setContent: (content: string) => void;
+    publishPost: (title: string, content: string) => Promise<void>;
     fetchAllPosts: () => void;
     fetchPost: (id: string) => void;
     fetchUserPosts: (id: string) => void;

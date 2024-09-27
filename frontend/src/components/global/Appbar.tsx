@@ -1,11 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Avatar from "../ui/Avatar";
-import { BiUser } from "react-icons/bi";
-import { GoBookmark } from "react-icons/go";
-import { IoLogOutOutline } from "react-icons/io5";
-import { IoCreateOutline } from "react-icons/io5";
-import { GoBell } from "react-icons/go";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { useToast } from "../../hooks/useToast";
@@ -17,6 +12,13 @@ import SearchBar from "../search/SearchBar";
 import SearchResultModal from "../search/SearchResultModal";
 import { Post, User } from "../../lib/types";
 import Button from "../ui/Button";
+import { WriteIcon } from "../../assets/write";
+import { NotificationIcon } from "../../assets/notification";
+import { ProfileIcon } from "../../assets/profile";
+import { BookmarkIcon } from "../../assets/bookmark";
+import { SignoutIcon } from "../../assets/signout";
+import PublishModal from "../modal/PublishModal";
+import { usePostStore } from "../../store/postStore";
 
 const Appbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,8 +32,15 @@ const Appbar = () => {
   const menuRef = useRef<HTMLDivElement>(null);
   const mobMenuRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const location = useLocation();
+  const { title, content } = usePostStore();
 
+  const [publishModalOpen, setPublishModalOpen] = useState(false);
+  const isPublishButtonDisabled = !title || !content;
+
+  const publishModalHandler = () => {
+    setPublishModalOpen((prev) => !prev);
+  };
+  const location = useLocation();
   const handleClickOutside = (event: MouseEvent) => {
     if (
       resultsRef.current &&
@@ -116,22 +125,21 @@ const Appbar = () => {
 
   return (
     <nav className='bg-white h-[70px] w-full text-black border-gray-[#f2f2f2] border-b sticky top-0 left-0 z-50'>
-      <div className='max-w-screen-2xl md:max-w-screen-2xl flex flex-wrap items-center justify-between mx-auto py-3 px-4 md:px-8'>
-        <div>
-          <Link
-            to='/'
-            className='flex items-center flex-grow rtl:space-x-reverse'>
+      <div className='max-w-screen-2xl md:max-w-screen-2xl flex items-center justify-between mx-auto py-3 px-4 md:px-8'>
+        <div className='flex flex-auto'>
+          <Link to='/' className='flex items-center rtl:space-x-reverse'>
             <img
               src='/logo.png'
               alt='article arc logo'
               width={60}
               height={60}
             />
-            <span className='self-center text-3xl font-bold whitespace-nowrap tracking-tighter'>
+            <span className='self-center text-2xl md:text-[2rem] font-extrabold whitespace-nowrap hidden xs:block font-pfd'>
               Articlearc
             </span>
           </Link>
         </div>
+
         <div className='flex justify-between items-center'>
           <SearchBar
             searchTerm={searchTerm}
@@ -139,20 +147,33 @@ const Appbar = () => {
             setSearchTerm={setSearchTerm}
             handleKeyDown={handleKeyDown}
             inputRef={searchInputRef}
+            openPublishModal={publishModalHandler}
+            disableBtn={isPublishButtonDisabled}
           />
           {isAuthenticated && (
             <div className='md:block hidden ml-8'>
-              <button
-                className='text-lg text-black font-medium py-2 flex items-center mr-2 opacity-70 hover:opacity-100'
-                onClick={() => navigate("/new-article")}>
-                <IoCreateOutline size={25} />
-                write
-              </button>
+              {location.pathname !== "/new-article" ? (
+                <button
+                  className=' text-black font-medium py-2 flex items-center mr-2 opacity-70 hover:opacity-100'
+                  onClick={() => navigate("/new-article")}>
+                  <WriteIcon />
+                  <p className='text-base tracking-tighter ml-2'>Write</p>
+                </button>
+              ) : (
+                <button
+                  disabled={isPublishButtonDisabled}
+                  className={`${
+                    isPublishButtonDisabled ? "opacity-50" : "opacity-100"
+                  } text-sm text-white bg-btn-primary font-medium px-3 py-1 flex items-center mr-2 rounded-full cursor-pointer`}
+                  onClick={publishModalHandler}>
+                  Publish
+                </button>
+              )}
             </div>
           )}
           {isAuthenticated && (
             <div className='mx-4 md:block hidden opacity-70 hover:opacity-100 cursor-pointer'>
-              <GoBell size={22} />
+              <NotificationIcon />
             </div>
           )}
           <div
@@ -197,7 +218,7 @@ const Appbar = () => {
                 } my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow`}
                 id='user-dropdown'>
                 <div className='px-4 py-3'>
-                  <span className='block text-md mt-1 font-semibold text-gray-900'>
+                  <span className='block text-md mt-1 font-bold text-gray-900'>
                     {authUser?.name}
                   </span>
                   <span className='block text-sm  text-gray-500 truncate'>
@@ -209,24 +230,24 @@ const Appbar = () => {
                     <Link
                       to={`/profile/${authUser?.id}`}
                       className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'>
-                      <BiUser fontSize={20} />
-                      <span className='ml-1'>Profile</span>
+                      <ProfileIcon />
+                      <span className='ml-2'>Profile</span>
                     </Link>
                   </li>
                   <li>
                     <Link
                       to={`/profile/${authUser?.id}/saved`}
                       className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'>
-                      <GoBookmark fontSize={20} />
-                      <span className='ml-1'>Saved</span>
+                      <BookmarkIcon />
+                      <span className='ml-2'>Saved</span>
                     </Link>
                   </li>
                   <li onClick={signoutHandler}>
                     <Link
                       to=''
                       className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'>
-                      <IoLogOutOutline fontSize={20} />
-                      <span className='ml-1'>Sign out</span>
+                      <SignoutIcon />
+                      <span className='ml-2'>Sign out</span>
                     </Link>
                   </li>
                 </ul>
@@ -252,6 +273,10 @@ const Appbar = () => {
           users={users}
         />
       )}
+      <PublishModal
+        openModal={publishModalOpen}
+        setOpenModal={setPublishModalOpen}
+      />
     </nav>
   );
 };

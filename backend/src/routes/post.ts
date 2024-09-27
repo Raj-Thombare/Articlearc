@@ -222,7 +222,8 @@ postRouter.get('/:id', async (c) => {
                     select: {
                         name: true,
                         email: true,
-                        id: true
+                        id: true,
+                        username: true,
                     }
                 }
             }

@@ -7,7 +7,7 @@ interface Props {
 const AuthHeader = ({ type }: Props) => {
   return (
     <div>
-      <div className='text-3xl font-extrabold mb-1 text-center'>
+      <div className='text-3xl font-extrabold mb-2 text-center'>
         {type === "signup" ? "Create an account" : "Log in your account"}
       </div>
       <div className='text-slate-500 text-center'>

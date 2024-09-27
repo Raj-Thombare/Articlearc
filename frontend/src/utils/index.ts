@@ -3,7 +3,7 @@ import { Post } from "../lib/types";
 export function formatTimestamp(timestamp: string) {
     const date = new Date(timestamp);
 
-    const month = date.toLocaleString("en-US", { month: "long" });
+    const month = date.toLocaleString("en-US", { month: "short" });
     const day = date.getDate();
     const year = date.getFullYear();
 

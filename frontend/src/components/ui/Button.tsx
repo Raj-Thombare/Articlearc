@@ -16,7 +16,7 @@ const Button = ({ label, onClick, size, icon, style, font }: Props) => {
         size ? "text-lg" : "text-sm"
       } ${style}`}>
       {icon ? <div className='mr-1'>{icon}</div> : ""}
-      <p className={`mx-auto text-center ${font}`}>{label}</p>
+      <p className={`mx-auto text-center ${font ? font : ""}`}>{label}</p>
     </button>
   );
 };

@@ -1,7 +1,8 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
-import { SlArrowLeft, SlArrowRight, SlCompass } from "react-icons/sl";
 import { unslugify } from "../../utils";
+import { ExploreIcon } from "../../assets/explore";
+import { ArrowLeft, ArrowRight } from "../../assets/arrow";
 
 const Carousel = ({
   tags,
@@ -26,14 +27,13 @@ const Carousel = ({
       <button
         onClick={scrollLeft}
         className='absolute left-0 p-2 bg-white h-[38px] z-20'>
-        <SlArrowLeft size={20} />
+        <ArrowLeft />
       </button>
-
       <div
         ref={scrollRef}
         className='flex overflow-x-scroll space-x-4 scrollbar-hide py-2 px-10 items-center'>
         <div className='flex items-center justify-center bg-gray-100 w-auto px-4 py-1.5 rounded-full cursor-pointer whitespace-nowrap'>
-          <SlCompass size={20} />
+          <ExploreIcon />
           <p className=' ml-2'>Explore Topics</p>
         </div>
         {tags.map((tag) => {
@@ -53,7 +53,7 @@ const Carousel = ({
       <button
         onClick={scrollRight}
         className='absolute right-0 z-20 p-2 bg-white h-[38px]'>
-        <SlArrowRight size={20} />
+        <ArrowRight />
       </button>
     </div>
   );

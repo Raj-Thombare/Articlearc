@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import Button from "../ui/Button";
 import { useNavigate } from "react-router-dom";
-import { BiUser } from "react-icons/bi";
-import { IoLogOutOutline } from "react-icons/io5";
-import { IoCreateOutline } from "react-icons/io5";
-import { GoBookmark } from "react-icons/go";
 import { useEffect } from "react";
+import { WriteIcon } from "../../assets/write";
+import { ProfileIcon } from "../../assets/profile";
+import { BookmarkIcon } from "../../assets/bookmark";
+import { SignoutIcon } from "../../assets/signout";
 
 interface Props {
   searchTerm: string;
@@ -74,50 +74,50 @@ const MobileMenu = ({
           onChange={(e) => {
             setSearchTerm(e.target.value);
           }}
-          className='block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus-visible:outline-none'
+          className='block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus-visible:outline-none focus:ring-0'
           placeholder='Search...'
         />
       </div>
       <ul className='md:hidden w-auto flex items-start flex-col p-4 font-medium rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white'>
         {isAuthenticated && (
-          <li>
+          <li className='w-full'>
             <Link
               to={`/new-article`}
-              className='flex items-center py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0'
+              className='flex items-center py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:p-0'
               aria-current='page'>
-              <IoCreateOutline size={20} />
-              <span className='ml-1'>Write</span>
+              <WriteIcon />
+              <span className='ml-2'>Write</span>
             </Link>
           </li>
         )}
         {isAuthenticated && (
-          <li>
+          <li className='w-full'>
             <Link
               to={`/profile/${authUser?.id}`}
-              className='flex items-center py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0'
+              className='flex items-center py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:p-0'
               aria-current='page'>
-              <BiUser size={20} />
-              <span className='ml-1'>Profile</span>
+              <ProfileIcon />
+              <span className='ml-2'>Profile</span>
             </Link>
           </li>
         )}
         {isAuthenticated && (
-          <li>
+          <li className='w-full'>
             <Link
               to={`/profile/${authUser?.id}/saved`}
-              className='flex items-center py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0'>
-              <GoBookmark size={20} />
-              <span className='ml-1'>Saved</span>
+              className='flex items-center py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:p-0'>
+              <BookmarkIcon />
+              <span className='ml-2'>Saved</span>
             </Link>
           </li>
         )}
         {isAuthenticated && (
-          <li onClick={signoutHandler}>
+          <li className='w-full' onClick={signoutHandler}>
             <Link
               to='#'
-              className='flex items-center py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0'>
-              <IoLogOutOutline size={20} />
-              <span className='ml-1'> Sign out</span>
+              className='flex items-center py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:p-0'>
+              <SignoutIcon />
+              <span className='ml-2'> Sign out</span>
             </Link>
           </li>
         )}

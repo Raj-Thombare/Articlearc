@@ -15,7 +15,7 @@ const Bookmark = () => {
 
   return (
     <div className='grid grid-cols-1 md:space-x-4 py-6 md:py-12'>
-      <h4 className='text-xl mb-4 font-semibold text-center'>Saved Articles</h4>
+      <h4 className='text-xl mb-4 font-bold text-center'>Saved Articles</h4>
       <div>
         {!isLoading && bookmarks ? (
           <div>

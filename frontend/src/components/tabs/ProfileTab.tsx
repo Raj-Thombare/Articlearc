@@ -21,13 +21,15 @@ const ProfileTab = React.memo(() => {
           styles='text-4xl md:text-3xl'
         />
         <div className='mt-6 text-base font-semibold w-full text-center md:text-left'>
-          <p className='font-semibold text-xl'>{user?.name}</p>
-          <p className='font-normal text-lg text-slate-500'>
+          <p className='font-semibold text-lg'>{user?.name}</p>
+          <p className='font-medium text-base text-slate-500'>
             @{user?.username}
           </p>
-          <p className='font-normal text-lg'>1.7m Followers</p>
+          <p className='font-medium text-base'>
+            <span className='font-extrabold mr-1'>1.2M</span>Followers
+          </p>
           {user?.about && (
-            <p className='text-base font-light text-slate-500 mt-3 p-4 md:p-0'>
+            <p className='text-base font-normal text-slate-500 mt-3 p-4 md:p-0'>
               {user?.about}
             </p>
           )}

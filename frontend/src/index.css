@@ -1,24 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+:root {
+    --color-primary: #6B6B6B;
+    --color-secondary: #6B6B6B;
+    --color-blue: #5487ee;
+    --color-btn-primary: #1a8917;
+    --color-light-blue: #4572c9;
+    --color-background: #F2F2F2;
+    --color-text: #6B6B6B;
+    --color-border: #bdc3c7;
+}
 body {
     box-sizing: border-box;
 }
 
-textarea {
-    resize: none;
+/* input {
+    outline: none !important;
+    border: none !important;
 }
 
-.scroll::-webkit-scrollbar {
-    display: none;
+input:focus {
+    outline: none !important;
+    border: none !important;
 }
 
-.editor .ql-editor {
-    font-size: 1.2rem;
-    outline: none;
-    /* padding: 0px !important; */
+*/
+.write .ql-editor {
+    font-size: 20px !important;
+    padding: 8px 12px !important;
+    font-family: 'font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif' !important;
 }
 
-input {
-    outline: none;
+.write .ql-editor::before {
+    color: #b3b3b1 !important;
+    font-style: normal !important;
 }
+
+h3[data-placeholder]:empty:before {
+    content: attr(data-placeholder);
+    color: #b3b3b1;
+}
+
+@keyframes fade-in-pulse {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+  .fade-in-pulse {
+      animation: fade-in-pulse 0.3s forwards cubic-bezier(0.8, 0.02, 0.45, 0.91);
+  }

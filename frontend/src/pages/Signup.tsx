@@ -84,7 +84,7 @@ const Signup = () => {
                   postInput.password
                 )
               }
-              style='mt-4 w-full font-semibold text-white bg-gray-800 rounded-lg'
+              style='mt-4 w-full font-bold text-white bg-gray-800 rounded-lg'
             />
           </div>
         </div>

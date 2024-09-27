@@ -34,19 +34,19 @@ const Explore = () => {
               {unslugify(tag![0].toUpperCase() + tag?.slice(1, tag.length))}
             </p>
             <div className='flex'>
-              <div className='pl-2 font-normal text-slate-500 text-base flex justify-center flex-col'>
+              <div className='pl-2 font-medium text-text text-base flex justify-center flex-col'>
                 Topic
               </div>
               <div className='flex justify-center flex-col pl-2'>
                 <Circle />
               </div>
-              <div className='pl-2 font-normal text-slate-500 text-base flex justify-center flex-col'>
+              <div className='pl-2 font-medium text-text text-base flex justify-center flex-col'>
                 {(Math.random() * (10 - 1) + 1).toFixed(1)}M Followers
               </div>
               <div className='flex justify-center flex-col pl-2'>
                 <Circle />
               </div>
-              <div className='pl-2 font-normal text-slate-500 text-base flex justify-center flex-col'>
+              <div className='pl-2 font-medium text-text text-base flex justify-center flex-col'>
                 {Math.floor(Math.random() * 999)}k stories
               </div>
             </div>
