@@ -1,36 +1,77 @@
 import { useLocation, useParams } from "react-router-dom";
 import { usePostStore } from "../store/postStore";
 import { PostCard, Circle } from "../components/post/PostCard";
-import { useEffect } from "react";
-import { formatTimestamp, unslugify } from "../utils";
+import { useCallback, useEffect, useState } from "react";
+import {
+  formatTimestamp,
+  getFollowersCount,
+  getStoriesCount,
+  unslugify,
+} from "../utils";
 import Button from "../components/ui/Button";
 import { useUserStore } from "../store/userStore";
 import Carousel from "../components/ui/Carousel";
+import PostSkeleton from "../components/loader/PostSkeleton";
 
 const Explore = () => {
   const { tag } = useParams();
   const { pathname } = useLocation();
-  const { fetchAllPosts, posts } = usePostStore();
+  const {
+    fetchAllPosts,
+    posts,
+    tags,
+    fetchAllTags,
+    fetchPostByTag,
+    postsByTag,
+    isLoading,
+  } = usePostStore();
   const { bookmarks } = useUserStore();
+  const [storiesCount, setStoriesCount] = useState(0);
+  const [followersCount, setFollowersCount] = useState(0);
 
-  useEffect(() => {
+  const tagName = pathname.split("/tag/")[1];
+
+  const getAllTags = useCallback(() => {
+    if (!tags) {
+      fetchAllTags();
+    }
+  }, [tags]);
+
+  const getPostByTag = useCallback(() => {
+    fetchPostByTag(tagName);
+  }, [tagName]);
+
+  const getAllPosts = useCallback(() => {
     if (!posts) {
       fetchAllPosts();
     }
-  }, [fetchAllPosts, posts]);
+  }, [posts]);
 
-  const filteredposts = posts?.filter((post) => post.category.includes(tag!));
-  const allTags = posts?.flatMap((post) => post.category);
+  useEffect(() => {
+    getAllTags();
+    getPostByTag();
+    getAllPosts();
+  }, [getAllTags, getPostByTag, getAllPosts]);
 
-  const tags = [...new Set(allTags)];
+  useEffect(() => {
+    const stories = getStoriesCount();
+    const followers = getFollowersCount();
+
+    if (stories && followers) {
+      setStoriesCount(stories);
+      setFollowersCount(followers);
+    }
+  }, [tagName]);
+
+  const allTags = tags?.flatMap((tag: { name: string }) => tag.name);
 
   return (
     <div className='py-6 md:py-12'>
-      <Carousel isActive={tag} tags={tags} path={pathname} />
+      <Carousel isActive={tagName} tags={allTags} path={pathname} />
       <div className='flex flex-col md:flex-row md:justify-evenly'>
         <div className='flex-1 max-w-full'>
           <div className='text-xl mb-4 text-center flex flex-col justify-center items-center pb-10 border-b'>
-            <p className='font-bold text-2xl md:text-4xl mb-4'>
+            <p className='font-extrabold text-3xl md:text-4xl mb-4'>
               {unslugify(tag![0].toUpperCase() + tag?.slice(1, tag.length))}
             </p>
             <div className='flex'>
@@ -41,13 +82,13 @@ const Explore = () => {
                 <Circle />
               </div>
               <div className='pl-2 font-medium text-text text-base flex justify-center flex-col'>
-                {(Math.random() * (10 - 1) + 1).toFixed(1)}M Followers
+                {followersCount}M Followers
               </div>
               <div className='flex justify-center flex-col pl-2'>
                 <Circle />
               </div>
               <div className='pl-2 font-medium text-text text-base flex justify-center flex-col'>
-                {Math.floor(Math.random() * 999)}k stories
+                {storiesCount}k stories
               </div>
             </div>
             <Button
@@ -59,21 +100,28 @@ const Explore = () => {
             />
           </div>
           <div>
-            {filteredposts?.map((post) => {
-              const formatedDate = formatTimestamp(post.createdAt);
-              return (
-                <PostCard
-                  key={post.id}
-                  id={post.id}
-                  title={post.title}
-                  content={post.content}
-                  publishedDate={formatedDate}
-                  authorId={post.authorId}
-                  authorName={post.author.name}
-                  bookmarks={bookmarks}
-                />
-              );
-            })}
+            {isLoading && (!postsByTag || postsByTag.length === 0) ? (
+              [...Array(2)].map((_, index) => <PostSkeleton key={index} />)
+            ) : postsByTag && postsByTag.length > 0 ? (
+              postsByTag.map((post) => {
+                const formatedDate = formatTimestamp(post.createdAt);
+                return (
+                  <PostCard
+                    key={post.id}
+                    id={post.id}
+                    authorName={post.author?.name}
+                    authorId={post.authorId}
+                    title={post.title}
+                    coverImage={post.coverImage}
+                    content={post.content}
+                    publishedDate={formatedDate}
+                    bookmarks={bookmarks}
+                  />
+                );
+              })
+            ) : (
+              <p className='text-center'>No posts found for this tag.</p>
+            )}
           </div>
         </div>
       </div>

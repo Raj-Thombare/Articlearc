@@ -4,12 +4,15 @@ import Avatar from "../ui/Avatar";
 import { useUserStore } from "../../store/userStore";
 import { useAuthStore } from "../../store/authStore";
 import { useToast } from "../../hooks/useToast";
-import { memo, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { memo, useCallback, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { usePostStore } from "../../store/postStore";
-import { DeleteIcon } from "../../assets/delete";
-import { EditIcon } from "../../assets/edit";
-import { AddBookmarkIcon, BookmarkedIcon } from "../../assets/bookmark";
+import {
+  AddBookmarkIcon,
+  BookmarkedIcon,
+  DeleteIcon,
+  EditIcon,
+} from "../../assets/icons";
 
 export const PostCard = memo(
   ({
@@ -21,28 +24,35 @@ export const PostCard = memo(
     authorId,
     bookmarks,
     isOwner,
+    coverImage,
+    tags,
   }: PostCardType) => {
     const { authUser } = useAuthStore();
     const { pathname } = useLocation();
+    const navigate = useNavigate();
 
     const { createBookmark, removeBookmark, user } = useUserStore();
     const { deletePost, fetchUserPosts } = usePostStore();
+
     const [isSaved, setIsSaved] = useState(false);
 
     const { showToast } = useToast();
 
-    useEffect(() => {
+    const setBookmarks = useCallback(() => {
       setIsSaved(!!bookmarks?.find((bookmark) => bookmark.postId === id));
     }, [id, bookmarks]);
+
+    useEffect(() => {
+      setBookmarks();
+    }, []);
 
     const addToBookmark = async () => {
       if (!authUser?.id) {
         showToast("You need to be signed in to save this post", "error");
         return;
       }
-
       try {
-        await createBookmark(authUser.id, id);
+        createBookmark(authUser?.id, id);
         setIsSaved(true);
         showToast("Post Saved", "success");
       } catch (error) {
@@ -55,9 +65,8 @@ export const PostCard = memo(
         showToast("You need to be signed in to remove post", "error");
         return;
       }
-
       try {
-        await removeBookmark(authUser?.id!, id);
+        removeBookmark(authUser?.id, id);
         setIsSaved(false);
         showToast("Post Removed", "success");
       } catch (error) {
@@ -75,9 +84,28 @@ export const PostCard = memo(
       }
     };
 
+    const redirectToEditor = () => {
+      navigate(`/post/edit/${id}`, {
+        state: { postDetails: { title, content, coverImage, tags } },
+      });
+    };
+
+    const stripHtml = (html: any) => {
+      const div = document.createElement("div");
+      div.innerHTML = html;
+      return div.textContent || div.innerText || "";
+    };
+
+    const shortDescription = stripHtml(content).substring(0, 110);
+
+    const getShortDescription = (description: string, maxLength: number) => {
+      if (description.length <= maxLength) return description;
+      return `${description.substring(0, maxLength)}...`;
+    };
+
     return (
-      <div className='p-4 border-b border-slate-200 pb-4 mx-auto max-w-[680px] break-words'>
-        <div className='flex'>
+      <div className='p-4 border-b border-slate-200 mx-auto max-w-[680px] break-words overflow-hidden'>
+        <div className='flex mb-1'>
           <Link to={`/profile/${authorId}`}>
             <div className='flex items-center'>
               <Avatar name={authorName} styles='text-xs' size='w-6 h-6' />
@@ -93,15 +121,70 @@ export const PostCard = memo(
             {publishedDate}
           </div>
         </div>
-        <Link to={`/post/${id}`}>
-          <div className='text-xl md:text-2xl font-extrabold py-2 tracking-tight'>
-            {title}
+        <Link to={`/post/${id}`} className='flex w-full'>
+          <div className='flex flex-col flex-1'>
+            <div className='text-xl md:text-2xl font-black py-2 tracking-tight'>
+              {title}
+            </div>
+            <div className='text-base font-medium text-text tracking-tight max-h-12 overflow-hidden'>
+              {getShortDescription(shortDescription, 110) + "..."}
+            </div>
+            {/* desktop */}
+            <div className='hidden md:flex justify-between items-center pt-4'>
+              <div className=' text-[13px] font-normal text-text bg-background rounded-full px-3 py-1 min-w-[100px]'>
+                {`${Math.ceil(content.length / 100)} min read`}
+              </div>
+              <div className='flex justify-end items-center w-28 md:w-32 space-x-5 md:space-x-10'>
+                {pathname.startsWith("/profile") &&
+                  !pathname.endsWith("/saved") &&
+                  isOwner && (
+                    <>
+                      <button
+                        className='opacity-70 hover:opacity-100'
+                        onClick={(event) => {
+                          event.preventDefault();
+                          redirectToEditor();
+                        }}>
+                        <EditIcon />
+                      </button>
+                      <button
+                        className='opacity-70 hover:opacity-100 ml-1'
+                        onClick={(event) => {
+                          event.preventDefault();
+                          deletePostHandler();
+                        }}>
+                        <DeleteIcon />
+                      </button>
+                    </>
+                  )}
+                {pathname === "/" || pathname.endsWith("/saved") ? (
+                  <button
+                    className='cursor-pointer'
+                    onClick={(event) => {
+                      event.preventDefault();
+                      if (isSaved) {
+                        removeFromBookmark();
+                      } else {
+                        addToBookmark();
+                      }
+                    }}>
+                    {isSaved ? <BookmarkedIcon /> : <AddBookmarkIcon />}
+                  </button>
+                ) : null}
+              </div>
+            </div>
           </div>
-          <div className='text-sm md:text-base font-medium text-text tracking-tight'>
-            {content?.slice(0, 150) + "..."}
+          <div className='flex items-start justify-end py-2'>
+            {coverImage && (
+              <img
+                src={`data:image/jpeg;base64,${coverImage}`}
+                alt='Cover Image'
+                className='cover-image w-[140px] sm:w-[160px] h-20 ml-[26px] sm:ml-[56px]'
+              />
+            )}
           </div>
         </Link>
-        <div className='flex justify-between items-center pt-4 flex-wrap'>
+        <div className='flex md:hidden justify-between items-center pt-4'>
           <div className=' text-[13px] font-normal text-text bg-background rounded-full px-3 py-1 '>
             {`${Math.ceil(content.length / 100)} min read`}
           </div>
@@ -110,30 +193,37 @@ export const PostCard = memo(
               !pathname.endsWith("/saved") &&
               isOwner && (
                 <>
-                  <button className='opacity-70 hover:opacity-100'>
+                  <button
+                    className='opacity-70 hover:opacity-100'
+                    onClick={(event) => {
+                      event.preventDefault();
+                      redirectToEditor();
+                    }}>
                     <EditIcon />
                   </button>
                   <button
                     className='opacity-70 hover:opacity-100'
-                    onClick={deletePostHandler}>
+                    onClick={(event) => {
+                      event.preventDefault();
+                      deletePostHandler();
+                    }}>
                     <DeleteIcon />
                   </button>
                 </>
               )}
             {pathname === "/" || pathname.endsWith("/saved") ? (
-              <div
+              <button
                 className='cursor-pointer'
-                onClick={isSaved ? removeFromBookmark : addToBookmark}>
-                {isSaved ? (
-                  <button className='opacity-100 hover:opacity-70'>
-                    <BookmarkedIcon />
-                  </button>
-                ) : (
-                  <button className='opacity-70 hover:opacity-100'>
-                    <AddBookmarkIcon />
-                  </button>
-                )}
-              </div>
+                onClick={(event) => {
+                  event.preventDefault();
+                  if (isSaved) {
+                    removeFromBookmark();
+                  } else {
+                    addToBookmark();
+                  }
+                }}>
+                {isSaved ? <BookmarkedIcon /> : <AddBookmarkIcon />}
+              </button>
             ) : null}
           </div>
         </div>

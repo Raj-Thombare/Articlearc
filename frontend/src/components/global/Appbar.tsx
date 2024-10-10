@@ -12,11 +12,13 @@ import SearchBar from "../search/SearchBar";
 import SearchResultModal from "../search/SearchResultModal";
 import { Post, User } from "../../lib/types";
 import Button from "../ui/Button";
-import { WriteIcon } from "../../assets/write";
-import { NotificationIcon } from "../../assets/notification";
-import { ProfileIcon } from "../../assets/profile";
-import { BookmarkIcon } from "../../assets/bookmark";
-import { SignoutIcon } from "../../assets/signout";
+import {
+  WriteIcon,
+  NotificationIcon,
+  ProfileIcon,
+  BookmarkIcon,
+  SignoutIcon,
+} from "../../assets/icons";
 import PublishModal from "../modal/PublishModal";
 import { usePostStore } from "../../store/postStore";
 
@@ -40,6 +42,7 @@ const Appbar = () => {
   const publishModalHandler = () => {
     setPublishModalOpen((prev) => !prev);
   };
+
   const location = useLocation();
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -152,14 +155,7 @@ const Appbar = () => {
           />
           {isAuthenticated && (
             <div className='md:block hidden ml-8'>
-              {location.pathname !== "/new-article" ? (
-                <button
-                  className=' text-black font-medium py-2 flex items-center mr-2 opacity-70 hover:opacity-100'
-                  onClick={() => navigate("/new-article")}>
-                  <WriteIcon />
-                  <p className='text-base tracking-tighter ml-2'>Write</p>
-                </button>
-              ) : (
+              {location.pathname === "/new-article" ? (
                 <button
                   disabled={isPublishButtonDisabled}
                   className={`${
@@ -168,9 +164,26 @@ const Appbar = () => {
                   onClick={publishModalHandler}>
                   Publish
                 </button>
+              ) : location.pathname.startsWith("/post/edit") ? (
+                <button
+                  disabled={isPublishButtonDisabled}
+                  className={`${
+                    isPublishButtonDisabled ? "opacity-50" : "opacity-100"
+                  } text-sm text-white bg-btn-primary font-medium px-3 py-1 flex items-center mr-2 rounded-full cursor-pointer`}
+                  onClick={publishModalHandler}>
+                  Update
+                </button>
+              ) : (
+                <button
+                  className='text-black font-medium py-2 flex items-center mr-2 opacity-70 hover:opacity-100'
+                  onClick={() => navigate("/new-article")}>
+                  <WriteIcon />
+                  <p className='text-base tracking-tighter ml-2'>Write</p>
+                </button>
               )}
             </div>
           )}
+
           {isAuthenticated && (
             <div className='mx-4 md:block hidden opacity-70 hover:opacity-100 cursor-pointer'>
               <NotificationIcon />

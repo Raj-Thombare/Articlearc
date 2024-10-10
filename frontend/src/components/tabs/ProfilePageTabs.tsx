@@ -3,10 +3,14 @@ import React from "react";
 interface TabsProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  isOwner: boolean;
+  isOwner?: boolean;
 }
 
-const Tabs: React.FC<TabsProps> = ({ activeTab, setActiveTab, isOwner }) => {
+const ProfilePageTabs: React.FC<TabsProps> = ({
+  activeTab,
+  setActiveTab,
+  isOwner,
+}) => {
   return (
     <div className='w-full text-sm mb-4 font-medium text-center border-b text-gray-500 border-gray-200 dark:text-gray-400 dark:border-gray-700'>
       <ul className='flex flex-wrap text-lg font-bold text-center border-gray-200 dark:border-gray-700 dark:text-gray-400'>
@@ -39,4 +43,4 @@ const Tabs: React.FC<TabsProps> = ({ activeTab, setActiveTab, isOwner }) => {
   );
 };
 
-export default Tabs;
+export default ProfilePageTabs;

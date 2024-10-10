@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { formatTimestamp } from "../utils";
-import Skeleton from "../components/loader/Skeleton";
+import { formatTimestamp, sortposts } from "../utils";
+import PostSkeleton from "../components/loader/PostSkeleton";
 import { useParams } from "react-router-dom";
 import { useUserStore } from "../store/userStore";
 import Aside from "../components/global/Aside";
 import ProfileSkeleton from "../components/loader/ProfileSkeleton";
-import Tabs from "../components/tabs/Tabs";
+import ProfilePageTabs from "../components/tabs/ProfilePageTabs";
 import SettingsTab from "../components/tabs/SettingsTab";
 import ProfileTab from "../components/tabs/ProfileTab";
 import { useAuthStore } from "../store/authStore";
@@ -34,52 +34,51 @@ const Profile = () => {
 
   const isOwner = authUser?.id === user?.id;
 
+  let sortedposts;
+  if (userPosts) {
+    sortedposts = sortposts(userPosts);
+  }
+
   return (
     <div className='flex flex-col-reverse md:flex-row md:justify-evenly md:min-h-[calc(74vh-70px)]'>
       <div className='flex-1 max-w-[728px] py-6 md:py-12 border-t md:border-0'>
         <div>
-          {!isLoading ? (
-            <div>
+          <div>
+            {!isLoading && (
               <h4 className='text-xl mb-4 font-bold text-center'>
                 Published Articles
               </h4>
-              {userPosts?.length > 0 ? (
-                <div>
-                  {userPosts?.map((post) => {
-                    const formattedDate = formatTimestamp(post.createdAt);
-                    return (
-                      <PostCard
-                        key={post.id}
-                        id={post.id}
-                        authorName={post.author.name}
-                        authorId={post.author.id}
-                        title={post.title}
-                        content={post.content}
-                        publishedDate={formattedDate}
-                        bookmarks={bookmarks}
-                        isOwner={isOwner}
-                      />
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className='text-center'>No articles written yet!</div>
-              )}
-            </div>
-          ) : (
-            <div>
-              <Skeleton />
-              <Skeleton />
-              <Skeleton />
-              <Skeleton />
-            </div>
-          )}
+            )}
+            {isLoading ? (
+              [...Array(3)].map((_, index) => <PostSkeleton key={index} />)
+            ) : !isLoading && userPosts && userPosts.length === 0 ? (
+              <div className='text-center py-4'>No articles written yet.</div>
+            ) : (
+              sortedposts?.map((post) => {
+                const formattedDate = formatTimestamp(post.createdAt);
+                return (
+                  <PostCard
+                    key={post.id}
+                    id={post.id}
+                    coverImage={post.coverImage}
+                    authorName={post.author.name}
+                    authorId={post.author.id}
+                    title={post.title}
+                    content={post.content}
+                    publishedDate={formattedDate}
+                    bookmarks={bookmarks}
+                    isOwner={isOwner}
+                  />
+                );
+              })
+            )}
+          </div>
         </div>
       </div>
       <Aside>
         {!isLoading ? (
           <>
-            <Tabs
+            <ProfilePageTabs
               activeTab={activeTab}
               setActiveTab={setActiveTab}
               isOwner={isOwner}
@@ -88,7 +87,7 @@ const Profile = () => {
             {activeTab === "settings" && isOwner && <SettingsTab />}
           </>
         ) : (
-          <ProfileSkeleton />
+          <ProfileSkeleton isOwner={isOwner} />
         )}
       </Aside>
     </div>

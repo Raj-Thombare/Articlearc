@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate';
 import { isAuth } from "../middleware/is-auth";
 import { createPostInput, updatePostInput } from "@raj-thombare/medium-common-types";
-import { slugify } from "../utils/slugify";
+import { arrayBufferToBase64, slugify } from "../utils";
 
 export const postRouter = new Hono<{
     Bindings: {
@@ -19,75 +19,115 @@ postRouter.post('/', isAuth, async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
-
     const userId = c.get('userId');
 
     try {
-        const body = await c.req.json();
-        const { success } = createPostInput.safeParse(body);
+        const form = await c.req.formData();
 
-        if (!success) {
-            c.status(400); 
-            return c.json({
-                message: "Inputs not correct"
-            });
+        const title = form.get('title');
+        const content = form.get('content');
+        const tags = form.get('tags');
+        const coverImage = form.get('coverImage') as File | null;
+
+        if (!title || !content) {
+            return c.json({ message: 'Title and content are required.' }, 400);
         }
-        const category = slugify(body.category);
+
+        const parsedTags = tags ? JSON.parse(tags as string) : [];
+
+        let coverImageData = null;
+        if (coverImage) {
+            const arrayBuffer = await coverImage.arrayBuffer();
+            coverImageData = arrayBufferToBase64(arrayBuffer);
+        }
         const post = await prisma.post.create({
             data: {
-                title: body.title,
-                content: body.content,
+                title: title as string,
+                content: content as string,
                 authorId: userId,
-                category: category
-            }
+                coverImage: coverImageData,
+                tags: {
+                    create: parsedTags.map((tag: string) => ({
+                        tag: {
+                            connectOrCreate: {
+                                where: { name: slugify(tag) },
+                                create: { name: slugify(tag) },
+                            },
+                        },
+                    })),
+                },
+            },
         });
 
-        return c.json({
-            id: post.id
-        }, 201); 
+        return c.json({ id: post.id }, 201);
     } catch (error) {
-        c.status(500);
-        return c.json({ error: "Error while creating post" });
+        console.error('Error creating post:', error);
+        return c.json({ error: 'Error while creating post' }, 500);
     }
 });
 
 // Update post
-postRouter.put('/:id', isAuth, async (c) => {
+postRouter.patch('/:id', isAuth, async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
 
-    const userId = c.get('userId');
     const postId = c.req.param('id');
 
     try {
-        const body = await c.req.json();
-        const { success } = updatePostInput.safeParse(body);
+        const form = await c.req.formData();
+        const title = form.get('title');
+        const content = form.get('content');
+        const tags = form.get('tags');
+        const coverImage = form.get('coverImage') as File | null;
 
-        if (!success) {
-            c.status(400); 
-            return c.json({
-                message: "Inputs not correct"
-            });
+        if (!title || !content) {
+            return c.json({ message: 'Title and content are required.' }, 400);
         }
 
-        const post = await prisma.post.update({
+        const parsedTags = tags ? JSON.parse(tags as string) : [];
+
+        const existingPost = await prisma.post.findUnique({
+            where: { id: postId }
+        });
+        if (!existingPost) {
+            return c.json({ error: "Post not found" }, 404);
+        }
+
+        let coverImageData = existingPost.coverImage;
+        if (coverImage && coverImage instanceof File) {
+            const arrayBuffer = await coverImage.arrayBuffer();
+            coverImageData = arrayBufferToBase64(arrayBuffer);
+        } else if (coverImage) {
+            console.warn('Expected coverImage to be a File instance, but got:', coverImage);
+        }
+
+        const updatedPost = await prisma.post.update({
             where: { id: postId },
             data: {
-                title: body.title,
-                content: body.content,
+                title: title as string,
+                content: content as string,
+                coverImage: coverImageData ? coverImageData : existingPost.coverImage,
+                tags: {
+                    create: parsedTags.map((tag: string) => ({
+                        tag: {
+                            connectOrCreate: {
+                                where: { name: slugify(tag) },
+                                create: { name: slugify(tag) },
+                            },
+                        },
+                    })),
+                },
             }
         });
 
-        if (!post) {
-            c.status(404);
-            return c.json({ error: "Post not found" });
-        }
-
         return c.json({
-            id: post.id
+            id: updatedPost.id,
+            post: updatedPost
         });
+
     } catch (error) {
+        console.error("Error updating post:", error);
         c.status(500);
         return c.json({ error: "Error while updating post" });
     }
@@ -136,7 +176,16 @@ postRouter.get('/all', async (c) => {
                 title: true,
                 id: true,
                 createdAt: true,
-                category: true,
+                coverImage: true,
+                tags: {
+                    include: {
+                        tag: {
+                            select: {
+                                name: true
+                            }
+                        },
+                    }
+                },
                 authorId: true,
                 author: {
                     select: {
@@ -176,7 +225,16 @@ postRouter.get('/user/:userId', isAuth, async (c) => {
                         title: true,
                         content: true,
                         createdAt: true,
-                        category: true,
+                        coverImage: true,
+                        tags: {
+                            include: {
+                                tag: {
+                                    select: {
+                                        name: true
+                                    }
+                                },
+                            }
+                        },
                         author: {
                             select: {
                                 id: true,
@@ -217,7 +275,16 @@ postRouter.get('/:id', async (c) => {
                 title: true,
                 content: true,
                 createdAt: true,
-                category: true,
+                coverImage: true,
+                tags: {
+                    include: {
+                        tag: {
+                            select: {
+                                name: true
+                            }
+                        },
+                    }
+                },
                 author: {
                     select: {
                         name: true,
@@ -247,26 +314,60 @@ postRouter.get('/tag/:tag', async (c) => {
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
 
-    const tag = c.req.param('tag');
+    const tagName = c.req.param('tag'); 
 
     try {
         const posts = await prisma.post.findMany({
             where: {
-                category: {
-                    has: tag,
-                },
+                tags: {
+                    some: {
+                        tag: {
+                            name: tagName,
+                        }
+                    }
+                }
+            },
+            include: {
+                tags: {
+                    include: {
+                        tag: true,
+                    }
+                }
             }
         });
 
-        if (!posts) {
+        if (posts.length === 0) {
             c.status(404);
             return c.json({ error: "Posts not found" });
         }
 
         return c.json({ posts });
     } catch (error) {
+        console.error("Error fetching posts:", error);
         c.status(500);
         return c.json({ error: "Error while fetching posts" });
+    }
+});
+
+//get all tags
+postRouter.get('/tags/all', async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    try {
+        const tags = await prisma.tag.findMany();
+
+        if (tags.length === 0) {
+            c.status(404);
+            return c.json({ error: "No tags found" });
+        }
+
+        return c.json({ tags });
+    } catch (error) {
+        console.error("Error fetching tags:", error);
+        c.status(500);
+        return c.json({ error: "Error while fetching tags" });
     }
 });
 

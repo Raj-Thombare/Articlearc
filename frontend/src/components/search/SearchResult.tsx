@@ -1,71 +1,77 @@
-import { Link } from "react-router-dom";
 import { Post, User } from "../../lib/types";
-import Avatar from "../ui/Avatar";
+import { PostCard } from "../post/PostCard";
+import { formatTimestamp } from "../../utils";
+import { useUserStore } from "../../store/userStore";
+import { useEffect } from "react";
+import UserProfileCard from "../user/UserProfileCard";
 
 interface Props {
   posts: Post[];
   users: User[];
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
 }
 
-const SearchResultModal = ({ posts, users }: Props) => {
+const SearchResultModal = ({ activeTab, posts, users }: Props) => {
+  const { user, bookmarks, fetchBookmarks } = useUserStore();
+
+  useEffect(() => {
+    if (!bookmarks && user?.id) {
+      fetchBookmarks(user?.id);
+    }
+  }, [user, bookmarks, fetchBookmarks]);
+
   return (
     <div className='py-2 px-4'>
-      {users.length > 0 || posts.length > 0 ? (
-        <div className='px-1 py-4'>
-          <div>
-            {posts.length !== 0 && (
+      <div className='px-1 py-4'>
+        {activeTab === "articles" && (
+          <>
+            {posts.length !== 0 ? (
               <div>
-                <div className='text-lg font-semibold border-b border-gray-300 mb-2'>
-                  ARTICLES
-                </div>
-                <div>
-                  {posts.map((post: Post) => {
-                    return (
-                      <div key={post.id} className='text-base py-1'>
-                        <Link
-                          to={`/post/${post.id}`}
-                          className='flex items-center'>
-                          {post?.title}
-                        </Link>
-                      </div>
-                    );
-                  })}
-                </div>
+                {posts.map((post: Post) => {
+                  const formatedDate = formatTimestamp(post.createdAt);
+                  return (
+                    <PostCard
+                      key={post.id}
+                      id={post.id}
+                      authorName={post.author?.name}
+                      authorId={post.authorId}
+                      title={post.title}
+                      coverImage={post.coverImage}
+                      content={post.content}
+                      publishedDate={formatedDate}
+                      bookmarks={bookmarks}
+                    />
+                  );
+                })}
               </div>
+            ) : (
+              <div className='text-lg p-4'>No results found</div>
             )}
-          </div>
-          <div className='mt-2'>
-            {users.length !== 0 && (
-              <div>
-                <div className='font-semibold border-b border-gray-300 mb-2 text-lg'>
-                  PEOPLE
-                </div>
-                <div>
-                  {users.map((user: User) => {
-                    return (
-                      <div key={user.id} className='text-base py-1'>
-                        <Link
-                          to={`/profile/${user.id}`}
-                          className='flex items-center'>
-                          <Avatar
-                            name={user?.name || ""}
-                            size='w-8 h-8'
-                            font='bold'
-                            styles='text-base'
-                          />
-                          <div className='ms-3'>{user?.name}</div>
-                        </Link>
-                      </div>
-                    );
-                  })}
-                </div>
+          </>
+        )}
+        {activeTab === "people" && (
+          <>
+            {users.length !== 0 ? (
+              <div className='py-2'>
+                {users.map((user: User) => {
+                  return (
+                    <UserProfileCard
+                      key={user.id}
+                      id={user.id}
+                      name={user.name}
+                      username={user.email}
+                      about={user.about}
+                    />
+                  );
+                })}
               </div>
+            ) : (
+              <div className='text-lg p-4'>No results found</div>
             )}
-          </div>
-        </div>
-      ) : (
-        <div className='text-xl'>No result found</div>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

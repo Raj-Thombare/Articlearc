@@ -23,3 +23,11 @@ export const unslugify = (slug: string): string => {
         .replace(/-/g, ' ')                // Replace hyphens with spaces
         .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize the first letter of each word
 };
+
+export const getFollowersCount = (): number => {
+    return parseFloat((Math.random() * (10 - 1) + 1).toFixed(1))
+}
+
+export const getStoriesCount = (): number => {
+    return Math.floor(Math.random() * 999)
+}

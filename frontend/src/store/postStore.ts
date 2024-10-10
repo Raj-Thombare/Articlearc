@@ -9,26 +9,53 @@ export const usePostStore = create<PostStateType>((set) => ({
     post: null,
     userPosts: [],
     bookmarks: [],
+    postsByTag: [],
+    tags: null,
     isLoading: true,
     error: null,
     title: "",
     content: "",
-    setTitle: (title) => set({ title }), // Action to update title
-    setContent: (content) => set({ content }),
-
-    publishPost: async (title: string, content: string) => {
+    coverImage: "",
+    postId: "",
+    setPostId: (postId) => set({ postId }),
+    setTitle: (title: string) => set({ title }),
+    setContent: (content: string) => set({ content }),
+    publishPost: async (formData: FormData) => {
         set({ isLoading: true, error: null });
         try {
             const token = getToken();
-            // if (title && content) {
-            //     set({ isPublished: true })
-            // }
-            const { data } = await axios.post(`${BACKEND}/api/v1/post`, { title, content }, {
+            await axios.post(`${BACKEND}/api/v1/post`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            const { data } = await axios.get(`${BACKEND}/api/v1/post/all`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            set({ posts: data, isLoading: false });
+            set({ posts: data.posts, isLoading: false });
         } catch (error) {
-            set({ error: 'Failed to publish post', isLoading: false });
+            console.error("Failed to publish post:", error);
+            set({ error: "Failed to publish post", isLoading: false });
+        }
+    },
+
+    editPost: async (id: string, formData: FormData) => {
+        set({ isLoading: true, error: null });
+        try {
+            const token = getToken();
+            await axios.patch(`${BACKEND}/api/v1/post/${id}`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
+                }
+            });
+            const { data } = await axios.get(`${BACKEND}/api/v1/post/all`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            set({ posts: data.posts, isLoading: false });
+        } catch (error) {
+            set({ error: 'Failed to update post', isLoading: false });
         }
     },
 
@@ -71,19 +98,6 @@ export const usePostStore = create<PostStateType>((set) => ({
         }
     },
 
-    createPost: async (title: string, content: string) => {
-        set({ isLoading: true, error: null });
-        try {
-            const token = getToken();
-            const { data } = await axios.post(`${BACKEND}/api/v1/post`, { title, content }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            set({ posts: data.posts, isLoading: false });
-        } catch (error) {
-            set({ error: 'Failed to delete post', isLoading: false });
-        }
-    },
-
     deletePost: async (id: string) => {
         set({ isLoading: true, error: null });
         try {
@@ -93,6 +107,33 @@ export const usePostStore = create<PostStateType>((set) => ({
             });
         } catch (error) {
             set({ error: 'Failed to delete post', isLoading: false });
+        }
+    },
+
+    fetchAllTags: async () => {
+        set({ isLoading: true, error: null });
+        try {
+            const token = getToken();
+            const { data } = await axios.get(`${BACKEND}/api/v1/post/tags/all`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            set({ tags: data.tags, isLoading: false });
+        } catch (error) {
+            set({ error: 'Failed to fetch tags', isLoading: false });
+        }
+    },
+
+    fetchPostByTag: async (tag: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            const token = getToken();
+            const { data } = await axios.get(`${BACKEND}/api/v1/post/tag/${tag}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            set({ postsByTag: data.posts, isLoading: false });
+        } catch (error) {
+            set({ error: 'Failed to fetch posts by tag', isLoading: false });
         }
     }
 }))

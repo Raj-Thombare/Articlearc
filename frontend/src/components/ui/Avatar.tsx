@@ -1,3 +1,4 @@
+import React from "react";
 import { AvatarProps } from "../../lib/types";
 
 const Avatar = ({
@@ -19,4 +20,4 @@ const Avatar = ({
   );
 };
 
-export default Avatar;
+export default React.memo(Avatar);

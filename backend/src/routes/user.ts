@@ -89,7 +89,8 @@ userRouter.get('/:id', async (c) => {
                         title: true,
                         content: true,
                         createdAt: true,
-                        category: true,
+                        coverImage: true,
+                        tags: true,
                         author: {
                             select: {
                                 id: true,  
@@ -113,7 +114,6 @@ userRouter.get('/:id', async (c) => {
         return c.json({ error: "Error while fetching user" });
     }
 });
-
 
 //remove saved post
 userRouter.delete('/:id/bookmark', isAuth, async (c) => {
@@ -191,8 +191,6 @@ userRouter.post('/:id/bookmark', isAuth, async (c) => {
     }
 });
 
-
-
 //get saved post
 userRouter.get('/:id/bookmarks', isAuth, async (c) => {
     const prisma = new PrismaClient({
@@ -214,7 +212,8 @@ userRouter.get('/:id/bookmarks', isAuth, async (c) => {
                         title: true,
                         content: true,
                         createdAt: true,
-                        category: true,
+                        coverImage: true,
+                        tags: true,
                         author: {
                             select: {
                                 name: true

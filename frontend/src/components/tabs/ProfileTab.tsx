@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { useUserStore } from "../../store/userStore";
-import EditModal from "../modal/EditModal";
+import EditModalProfile from "../modal/EditProfileModal";
 import Avatar from "../ui/Avatar";
 import Button from "../ui/Button";
 
@@ -25,9 +25,14 @@ const ProfileTab = React.memo(() => {
           <p className='font-medium text-base text-slate-500'>
             @{user?.username}
           </p>
-          <p className='font-medium text-base'>
-            <span className='font-extrabold mr-1'>1.2M</span>Followers
-          </p>
+          <div className='flex w-full justify-center md:justify-start text-gray-500'>
+            <p className='font-semibold text-base mr-4'>
+              <span className='mr-1'>1.2M</span>Followers
+            </p>
+            <p className='font-semibold text-base'>
+              <span className='mr-1'>9K</span>Following
+            </p>
+          </div>
           {user?.about && (
             <p className='text-base font-normal text-slate-500 mt-3 p-4 md:p-0'>
               {user?.about}
@@ -55,7 +60,7 @@ const ProfileTab = React.memo(() => {
           </div>
         </div>
       </div>
-      <EditModal openModal={openModal} setOpenModal={setOpenModal} />
+      <EditModalProfile openModal={openModal} setOpenModal={setOpenModal} />
     </div>
   );
 });

@@ -10,7 +10,7 @@ type Props = {
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const EditModal = ({ setOpenModal, openModal }: Props) => {
+const EditProfileModal = ({ setOpenModal, openModal }: Props) => {
   const { updateUser } = useUserStore();
   const { authUser } = useAuthStore();
   const [name, setName] = useState("");
@@ -106,4 +106,4 @@ const EditModal = ({ setOpenModal, openModal }: Props) => {
   );
 };
 
-export default EditModal;
+export default EditProfileModal;

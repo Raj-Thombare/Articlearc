@@ -11,7 +11,8 @@ export interface Post {
     title: string;
     id: string
     authorId: string;
-    category: string[];
+    coverImage: string;
+    tags: TagObject[];
     author: {
         name: string;
         id: string;
@@ -26,10 +27,12 @@ export interface PostCardType {
     authorId: string;
     title: string;
     content: string;
+    coverImage: string;
     publishedDate: string;
     id: string;
     bookmarks: Bookmark[] | null;
     isOwner?: boolean;
+    tags?: [] | null;
 }
 
 export interface AuthStateType {
@@ -44,21 +47,39 @@ export interface AuthStateType {
     checkAuth: () => void;
 }
 
+export interface Tag {
+    name: string;
+}
+
+export interface TagObject {
+    postId: string;
+    tag: Tag;
+    tagId: string;
+}
+
 export interface PostStateType {
     posts: Post[] | null;
-    post: null;
+    post: Post | null;
     userPosts: Post[];
+    tags: [] | null;
     error: string | null;
+    postsByTag: Post[] | null;
     isLoading: boolean;
     title: string;
     content: string;
+    coverImage: string;
+    postId: string;
+    setPostId: (postId: string) => void,
     setTitle: (title: string) => void;
     setContent: (content: string) => void;
-    publishPost: (title: string, content: string) => Promise<void>;
+    publishPost: (formData: FormData) => Promise<void>;
     fetchAllPosts: () => void;
     fetchPost: (id: string) => void;
     fetchUserPosts: (id: string) => void;
-    deletePost: (id: string) => Promise<void>;
+    deletePost: (id: string) => Promise<void>;    
+    editPost: (id: string, formData: FormData) => Promise<void>;
+    fetchAllTags: () => void;
+    fetchPostByTag: (tag: string) => void;
 }
 
 export interface Bookmark {

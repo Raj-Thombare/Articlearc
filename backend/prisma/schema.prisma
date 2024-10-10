@@ -22,19 +22,20 @@ model User {
   password  String
   about     String?
   posts     Post[]
-  bookmarks Bookmark[] 
+  bookmarks Bookmark[]
 }
 
 model Post {
   id         String  @id @default(uuid())
   title      String
   content    String
+  coverImage String?
   published  Boolean @default(false)
   author     User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId   String
-  category   String[] 
   createdAt  DateTime @default(now()) @db.Timestamptz(6)
   bookmarks  Bookmark[] 
+  tags       PostTag[] 
 }
 
 model Bookmark {
@@ -43,4 +44,18 @@ model Bookmark {
   user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   post       Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
   @@id([userId, postId]) // Composite primary key for userId and postId
+}
+
+model Tag {
+  id     String @id @default(uuid())
+  name   String @unique
+  posts  PostTag[]
+}
+
+model PostTag {
+  postId  String
+  tagId   String
+  post    Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag     Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  @@id([postId, tagId])
 }

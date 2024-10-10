@@ -1,3 +1,5 @@
+import React from "react";
+
 interface Props {
   label: string;
   style?: string;
@@ -21,4 +23,4 @@ const Button = ({ label, onClick, size, icon, style, font }: Props) => {
   );
 };
 
-export default Button;
+export default React.memo(Button);

@@ -1,9 +1,14 @@
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.bubble.css";
 import { usePostStore } from "../store/postStore";
+import { useLocation, useParams } from "react-router-dom";
+import { useEffect } from "react";
 
 const Publish = () => {
-  const { title, content, setTitle, setContent } = usePostStore();
+  const { state } = useLocation();
+  const { id } = useParams();
+
+  const { setPostId, setTitle, setContent, title, content } = usePostStore();
 
   const handleTitleChange = (e: React.FormEvent<HTMLHeadingElement>) => {
     const newTitle = e.currentTarget.innerText;
@@ -13,6 +18,21 @@ const Publish = () => {
   const handleDescriptionChange = (newContent: string) => {
     setContent(newContent);
   };
+
+  useEffect(() => {
+    return () => {
+      setTitle("");
+      setContent("");
+    };
+  }, [location.pathname, setTitle, setContent]);
+
+  useEffect(() => {
+    if (state?.postDetails && id) {
+      setPostId(id);
+      setTitle(state.postDetails.title);
+      setContent(state.postDetails.content);
+    }
+  }, []);
 
   return (
     <div className='flex justify-center w-full px-5 py-6 md:py-12'>
@@ -28,7 +48,7 @@ const Publish = () => {
         <ReactQuill
           theme='bubble'
           placeholder='Tell your story...'
-          className='write font-serif'
+          className='write font-serif text-xl'
           value={content}
           onChange={handleDescriptionChange}
         />

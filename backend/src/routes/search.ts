@@ -11,7 +11,6 @@ export const searchRouter = new Hono<{
     }
 }>();
 
-
 // Search users and posts
 searchRouter.get('/', async (c) => {
     const prisma = new PrismaClient({

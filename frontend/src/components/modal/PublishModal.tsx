@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, Image as ImageIcon, HelpCircle } from "lucide-react";
 import { useToast } from "../../hooks/useToast";
 import Button from "../ui/Button";
 import { usePostStore } from "../../store/postStore";
+import { useNavigate } from "react-router-dom";
+import { useUserStore } from "../../store/userStore";
 
 type Props = {
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -11,9 +13,21 @@ type Props = {
 
 const PublishModal = ({ setOpenModal, openModal }: Props) => {
   const { showToast } = useToast();
-  const [coverImage, setCoverImage] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
-  const { publishPost, title, content, setTitle } = usePostStore();
+  const [coverImage, setCoverImage] = useState<string | File | null>(null);
+  const {
+    publishPost,
+    editPost,
+    fetchPost,
+    postId,
+    post,
+    setTitle,
+    setContent,
+    title,
+    content,
+  } = usePostStore();
+  const { user } = useUserStore();
+  const navigate = useNavigate();
 
   const closeModal = () => {
     setOpenModal(false);
@@ -22,9 +36,7 @@ const PublishModal = ({ setOpenModal, openModal }: Props) => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setCoverImage(reader.result as string);
-      reader.readAsDataURL(file);
+      setCoverImage(file);
     }
   };
 
@@ -39,14 +51,83 @@ const PublishModal = ({ setOpenModal, openModal }: Props) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
+  useEffect(() => {
+    if (postId) {
+      fetchPost(postId);
+    }
+  }, [postId, fetchPost]);
+
+  const postTags: string[] = post?.tags?.map((tagObj) => tagObj.tag.name) || [];
+
+  useEffect(() => {
+    if (post) {
+      setTitle(post.title);
+      setContent(post.content);
+      setTags(postTags);
+      if (post.coverImage) {
+        setCoverImage(post.coverImage);
+      }
+    }
+  }, [post]);
+
   const handlePublish = async () => {
     if (!title || !content) {
       showToast("Title and content are required.", "error");
       return;
     }
-    await publishPost(title, content);
-    showToast("Article published successfully!", "success");
-    closeModal();
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("tags", JSON.stringify(tags));
+    if (coverImage) {
+      formData.append("coverImage", coverImage);
+    }
+
+    try {
+      await publishPost(formData);
+      showToast("Article published successfully!", "success");
+      navigate("/");
+      closeModal();
+      resetForm();
+    } catch (error) {
+      console.error("Error publishing post:", error);
+      showToast("Failed to publish article.", "error");
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!title || !content) {
+      showToast("Title and content are required.", "error");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("tags", JSON.stringify(tags));
+
+    if (coverImage) {
+      formData.append("coverImage", coverImage);
+    }
+
+    try {
+      if (postId) await editPost(postId, formData);
+      showToast("Update successful!", "success");
+      navigate("/");
+      closeModal();
+      resetForm();
+    } catch (error) {
+      console.error("Error updating post:", error);
+      showToast("Failed to update post.", "error");
+    }
+  };
+
+  const resetForm = () => {
+    setTitle("");
+    setContent("");
+    setTags([]);
+    setCoverImage(null);
   };
 
   return (
@@ -61,6 +142,7 @@ const PublishModal = ({ setOpenModal, openModal }: Props) => {
             className='absolute top-4 right-4 text-gray-500 hover:text-gray-700 p-4'>
             <X className='h-6 w-6' />
           </button>
+
           {/* Left side */}
           <div className='space-y-4 p-1 md:p-10'>
             <h3 className='font-bold text-lg'>Story Preview</h3>
@@ -68,7 +150,11 @@ const PublishModal = ({ setOpenModal, openModal }: Props) => {
               {coverImage ? (
                 <div className='relative'>
                   <img
-                    src={coverImage}
+                    src={
+                      typeof coverImage === "string"
+                        ? coverImage
+                        : URL.createObjectURL(coverImage)
+                    }
                     alt='Cover'
                     className='w-full h-48 object-cover rounded-md'
                   />
@@ -122,7 +208,7 @@ const PublishModal = ({ setOpenModal, openModal }: Props) => {
             <div className='space-y-4'>
               <div className='flex items-left space-x-0 xs:space-x-2 text-lg flex-col xs:flex-row'>
                 <p className='font-normal'>Publishing to:</p>
-                <span className='font-bold'>Raj Thombare</span>
+                <span className='font-bold'>{user?.name}</span>
               </div>
 
               <div className='space-y-2'>
@@ -142,10 +228,13 @@ const PublishModal = ({ setOpenModal, openModal }: Props) => {
                     {tags.map((tag, index) => (
                       <span
                         key={index}
-                        className='bg-gray-200 px-2 py-1 rounded-full text-base flex items-center'>
+                        className='bg-gray-200 rounded-md px-3 py-1 text-sm'>
                         {tag}
-                        <button onClick={() => removeTag(tag)} className='ml-1'>
-                          <X className='h-3 w-3' />
+                        <button
+                          type='button'
+                          onClick={() => removeTag(tag)}
+                          className='ml-2 text-red-500'>
+                          x
                         </button>
                       </span>
                     ))}
@@ -154,18 +243,18 @@ const PublishModal = ({ setOpenModal, openModal }: Props) => {
               </div>
             </div>
 
-            <div className='space-y-2'>
-              <div className='flex items-center space-x-2'>
-                <HelpCircle className='h-4 w-4 text-gray-400' />
-                <span className='text-sm text-gray-600'>
-                  Learn more about publishing.
-                </span>
-              </div>
+            <div className='space-y-4 mt-6'>
               <Button
-                label='Publish now'
-                onClick={handlePublish}
+                label='Update post'
+                onClick={postId ? handleUpdate : handlePublish}
                 style='w-full font-medium text-white bg-btn-primary rounded-lg mr-2'
               />
+              <div className='flex items-center space-x-1 text-gray-500'>
+                <HelpCircle className='h-4 w-4' />
+                <span className='text-xs'>
+                  Click {postId ? "Update" : "Publish"} to make your post live.
+                </span>
+              </div>
             </div>
           </div>
         </div>

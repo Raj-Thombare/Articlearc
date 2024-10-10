@@ -21,10 +21,11 @@ const SearchBar = ({
   openPublishModal,
 }: Props) => {
   const { pathname } = useLocation();
+
   return (
     <div className='flex flex-wrap items-center justify-between mx-auto'>
       <div className='flex items-center md:order-2'>
-        {pathname === "/new-article" && (
+        {pathname === "/new-article" ? (
           <button
             disabled={disableBtn}
             className={`${
@@ -33,8 +34,18 @@ const SearchBar = ({
             onClick={openPublishModal}>
             Publish
           </button>
+        ) : (
+          location.pathname.startsWith("/post/edit") && (
+            <button
+              disabled={disableBtn}
+              className={`${
+                disableBtn ? "opacity-50" : "opacity-100"
+              } text-sm text-white md:hidden bg-btn-primary font-medium px-3 py-1 flex items-center mr-2 rounded-full cursor-pointer`}
+              onClick={openPublishModal}>
+              Update
+            </button>
+          )
         )}
-
         <button
           type='button'
           onClick={toggleMobNav}

@@ -1,14 +1,13 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import { unslugify } from "../../utils";
-import { ExploreIcon } from "../../assets/explore";
-import { ArrowLeft, ArrowRight } from "../../assets/arrow";
+import { ArrowLeft, ArrowRight, ExploreIcon } from "../../assets/icons";
 
 const Carousel = ({
   tags,
   isActive,
 }: {
-  tags: string[];
+  tags: string[] | undefined;
   isActive: string | undefined;
   path: string;
 }) => {
@@ -36,7 +35,7 @@ const Carousel = ({
           <ExploreIcon />
           <p className=' ml-2'>Explore Topics</p>
         </div>
-        {tags.map((tag) => {
+        {tags?.map((tag) => {
           return (
             <Link
               to={`/tag/${tag}`}
@@ -59,4 +58,4 @@ const Carousel = ({
   );
 };
 
-export default Carousel;
+export default React.memo(Carousel);

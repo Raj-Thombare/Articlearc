@@ -3,10 +3,12 @@ import { useAuthStore } from "../../store/authStore";
 import Button from "../ui/Button";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { WriteIcon } from "../../assets/write";
-import { ProfileIcon } from "../../assets/profile";
-import { BookmarkIcon } from "../../assets/bookmark";
-import { SignoutIcon } from "../../assets/signout";
+import {
+  WriteIcon,
+  ProfileIcon,
+  BookmarkIcon,
+  SignoutIcon,
+} from "../../assets/icons";
 
 interface Props {
   searchTerm: string;
@@ -43,7 +45,7 @@ const MobileMenu = ({
       ref={mobMenuRef}
       className={`${
         mobNavOpen ? "flex" : "hidden"
-      } bg-white z-50 items-center flex-col justify-between w-full md:w-auto md:order-1`}
+      } bg-white z-50 items-center flex-col justify-between w-full md:w-auto md:order-1 drop-shadow`}
       id='navbar-search'>
       <div className='relative mt-3 md:hidden'>
         <div

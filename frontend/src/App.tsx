@@ -36,6 +36,12 @@ function App() {
             <Route path='/profile/:id' element={<Profile />} />
             <Route element={<ProtectedRoute />}>
               <Route
+                path='/post/edit/:id'
+                element={
+                  isAuthenticated ? <Publish /> : <Navigate to='/signin' />
+                }
+              />
+              <Route
                 path='/new-article'
                 element={
                   isAuthenticated ? <Publish /> : <Navigate to='/signin' />

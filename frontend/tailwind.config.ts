@@ -5,7 +5,7 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}", flowbite.content()],
   theme: {
     screens: {
-      xs: "360px",
+      xs: "400px",
       sm: "640px",
       md: "768px",
       lg: "1024px",
@@ -46,5 +46,9 @@ export default {
       },
     },
   },
-  plugins: [require("tailwind-scrollbar-hide"), flowbite.plugin()],
+  plugins: [
+    require("tailwind-scrollbar-hide"),
+    flowbite.plugin(),
+    require("@tailwindcss/typography"),
+  ],
 };
