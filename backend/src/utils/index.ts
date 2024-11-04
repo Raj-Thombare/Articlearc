@@ -1,3 +1,5 @@
+import CryptoJS from 'crypto-js';
+
 export async function hashPassword(password: string): Promise<string> {
     const encodedPassword = new TextEncoder().encode(password);
 
@@ -26,12 +28,8 @@ export function extractUsername(email: string): string {
     return email.split('@')[0];
 }
 
-export function arrayBufferToBase64(buffer: ArrayBuffer): string {
-    let binary = '';
-    const bytes = new Uint8Array(buffer);
-    const len = bytes.byteLength;
-    for (let i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i]);
-    }
-    return btoa(binary);
+export function generateSignature(publicId: string, apiSecret: string) {
+    const timestamp = Math.floor(Date.now() / 1000);
+    const signatureString = `public_id=${publicId}&timestamp=${timestamp}${apiSecret}`;
+    return CryptoJS.SHA1(signatureString).toString();
 }

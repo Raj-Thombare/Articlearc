@@ -122,7 +122,7 @@ userRouter.delete('/:id/bookmark', isAuth, async (c) => {
     }).$extends(withAccelerate());
 
     //@ts-ignore
-    const userId = c.get('userId');
+    const userId = c.get('userId') as string;
 
     try {
 
@@ -138,6 +138,9 @@ userRouter.delete('/:id/bookmark', isAuth, async (c) => {
         const savedPosts = await prisma.bookmark.findMany({
             where: { userId: userId },
             include: { post: true },
+            orderBy: {
+                createdAt: 'desc'
+            }
         });
 
         return c.json({ savedPosts }, 200);
@@ -154,7 +157,7 @@ userRouter.post('/:id/bookmark', isAuth, async (c) => {
     }).$extends(withAccelerate());
 
     //@ts-ignore
-    const userId = c.get('userId');
+    const userId = c.get('userId') as string;
 
     try {
         const { postId } = await c.req.json();
@@ -184,21 +187,30 @@ userRouter.post('/:id/bookmark', isAuth, async (c) => {
             },
         });
 
-        return c.json({ msg: "Post saved successfully" }, 200);
+        const savedPosts = await prisma.bookmark.findMany({
+            where: { userId: userId },
+            include: { post: true },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+
+        return c.json({ savedPosts }, 200);
+
     } catch (error) {
         console.error('Error while saving post:', error);
         return c.json({ error: "Error while saving post" }, 500);
     }
 });
 
-//get saved post
+//get saved posts
 userRouter.get('/:id/bookmarks', isAuth, async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
 
     //@ts-ignore
-    const userId = c.get('userId');
+    const userId = c.get('userId') as string;
 
     try {
         const savedPosts = await prisma.bookmark.findMany({
@@ -219,8 +231,12 @@ userRouter.get('/:id/bookmarks', isAuth, async (c) => {
                                 name: true
                             }
                         }
-                    }
+                    },
                 },
+
+            },
+            orderBy: {
+                createdAt: 'desc'
             }
         })
 
@@ -238,7 +254,7 @@ userRouter.patch('/:id', isAuth, async (c) => {
     }).$extends(withAccelerate());
 
     //@ts-ignore
-    const userId = c.get('userId');
+    const userId = c.get('userId') as string;
 
     try {
         const { name, email, about } = await c.req.json();

@@ -35,12 +35,13 @@ model Post {
   authorId   String
   createdAt  DateTime @default(now()) @db.Timestamptz(6)
   bookmarks  Bookmark[] 
-  tags       PostTag[] 
+  tags       Tag[]
 }
 
 model Bookmark {
   userId     String
   postId     String
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
   user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   post       Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
   @@id([userId, postId]) // Composite primary key for userId and postId
@@ -49,13 +50,5 @@ model Bookmark {
 model Tag {
   id     String @id @default(uuid())
   name   String @unique
-  posts  PostTag[]
-}
-
-model PostTag {
-  postId  String
-  tagId   String
-  post    Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  tag     Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
-  @@id([postId, tagId])
+  posts  Post[]
 }

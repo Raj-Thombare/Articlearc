@@ -4,14 +4,19 @@
     "deploy": "wrangler deploy --minify src/index.ts"
   },
   "dependencies": {
+    "@hono/node-server": "^1.13.2",
     "@prisma/client": "^5.13.0",
     "@prisma/extension-accelerate": "^1.0.0",
-    "@raj-thombare/medium-common-types": "^1.0.0",
-    "hono": "^4.0.7",
+    "@raj-thombare/articlearc-types": "^1.1.2",
+    "cloudinary": "^2.5.1",
+    "crypto-js": "^4.2.0",
+    "hono": "^4.6.5",
     "prisma": "^5.13.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240208.0",
+    "@types/crypto-js": "^4.2.2",
+    "@types/node": "^22.7.7",
     "wrangler": "^3.55.0"
   }
 }
