@@ -60,7 +60,11 @@ const ProfileTab = React.memo(() => {
           </div>
         </div>
       </div>
-      <EditModalProfile openModal={openModal} setOpenModal={setOpenModal} />
+      <EditModalProfile
+        user={user}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+      />
     </div>
   );
 });

@@ -13,11 +13,24 @@ export const usePostStore = create<PostStateType>((set) => ({
     tags: null,
     isLoading: true,
     error: null,
-    title: "",
+    title: null,
     content: "",
     coverImage: "",
-    postId: "",
+    postId: null,
+    resetPost: () => {
+        set({
+            post: null
+        })
+    },
+    resetPostStore: () =>
+        set({
+            postId: null,
+            title: "",
+            content: "",
+            coverImage: "",
+        }),
     setPostId: (postId) => set({ postId }),
+    setCoverImage: (coverImage: File | string) => set({ coverImage }),
     setTitle: (title: string) => set({ title }),
     setContent: (content: string) => set({ content }),
     publishPost: async (formData: FormData) => {
@@ -105,6 +118,10 @@ export const usePostStore = create<PostStateType>((set) => ({
             await axios.delete(`${BACKEND}/api/v1/post/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
+            const { data } = await axios.get(`${BACKEND}/api/v1/post/all`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            set({ posts: data.posts, isLoading: false });
         } catch (error) {
             set({ error: 'Failed to delete post', isLoading: false });
         }

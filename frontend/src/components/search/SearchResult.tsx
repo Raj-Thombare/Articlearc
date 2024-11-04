@@ -4,6 +4,7 @@ import { formatTimestamp } from "../../utils";
 import { useUserStore } from "../../store/userStore";
 import { useEffect } from "react";
 import UserProfileCard from "../user/UserProfileCard";
+import { useAuthStore } from "../../store/authStore";
 
 interface Props {
   posts: Post[];
@@ -12,12 +13,13 @@ interface Props {
   setActiveTab: (tab: string) => void;
 }
 
-const SearchResultModal = ({ activeTab, posts, users }: Props) => {
+const SearchResult = ({ activeTab, posts, users }: Props) => {
   const { user, bookmarks, fetchBookmarks } = useUserStore();
+  const { authUser } = useAuthStore();
 
   useEffect(() => {
-    if (!bookmarks && user?.id) {
-      fetchBookmarks(user?.id);
+    if (!bookmarks && authUser?.id) {
+      fetchBookmarks(authUser?.id);
     }
   }, [user, bookmarks, fetchBookmarks]);
 
@@ -76,4 +78,4 @@ const SearchResultModal = ({ activeTab, posts, users }: Props) => {
   );
 };
 
-export default SearchResultModal;
+export default SearchResult;

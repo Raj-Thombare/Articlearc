@@ -6,6 +6,7 @@ import Button from "../components/ui/Button";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../hooks/useToast";
+import { useUserStore } from "../store/userStore";
 
 const test_email = import.meta.env.VITE_TEST_USER_EMAIL;
 const test_password = import.meta.env.VITE_TEST_USER_PASSWORD;
@@ -18,7 +19,8 @@ const Signin = () => {
 
   const navigate = useNavigate();
 
-  const { signin } = useAuthStore();
+  const { signin, authUser } = useAuthStore();
+  const { fetchBookmarks } = useUserStore();
 
   const { showToast } = useToast();
 
@@ -27,6 +29,10 @@ const Signin = () => {
       if (email && password) {
         await signin(email, password);
         showToast("Signed in successfully", "success");
+
+        if (authUser?.id) {
+          await fetchBookmarks(authUser.id);
+        }
         navigate("/");
       } else {
         showToast("Please enter email & password", "warning");

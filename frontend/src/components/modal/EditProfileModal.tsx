@@ -1,16 +1,18 @@
 import { Textarea, Label, Modal, TextInput } from "flowbite-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUserStore } from "../../store/userStore";
 import { useToast } from "../../hooks/useToast";
 import { useAuthStore } from "../../store/authStore";
 import Avatar from "../ui/Avatar";
+import { User } from "../../lib/types";
 
 type Props = {
   openModal: boolean;
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
+  user: User | null;
 };
 
-const EditProfileModal = ({ setOpenModal, openModal }: Props) => {
+const EditProfileModal = ({ setOpenModal, openModal, user }: Props) => {
   const { updateUser } = useUserStore();
   const { authUser } = useAuthStore();
   const [name, setName] = useState("");
@@ -24,6 +26,14 @@ const EditProfileModal = ({ setOpenModal, openModal }: Props) => {
     setEmail("");
     setAbout("");
   }
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name);
+      setEmail(user.email);
+      setAbout(user.about);
+    }
+  }, [user, openModal]);
 
   const updateUserHandler = async () => {
     if (!name && !email && !about) {

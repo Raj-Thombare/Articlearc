@@ -12,7 +12,7 @@ export interface Post {
     id: string
     authorId: string;
     coverImage: string;
-    tags: TagObject[];
+    tags: Tag[];
     author: {
         name: string;
         id: string;
@@ -48,13 +48,8 @@ export interface AuthStateType {
 }
 
 export interface Tag {
+    id: string;
     name: string;
-}
-
-export interface TagObject {
-    postId: string;
-    tag: Tag;
-    tagId: string;
 }
 
 export interface PostStateType {
@@ -65,18 +60,21 @@ export interface PostStateType {
     error: string | null;
     postsByTag: Post[] | null;
     isLoading: boolean;
-    title: string;
+    title: string | null;
     content: string;
-    coverImage: string;
-    postId: string;
+    coverImage: File | string;
+    postId: string | null;
+    resetPostStore: () => void;
+    resetPost: () => void;
     setPostId: (postId: string) => void,
     setTitle: (title: string) => void;
+    setCoverImage: (coverImage: File | string) => void;
     setContent: (content: string) => void;
     publishPost: (formData: FormData) => Promise<void>;
     fetchAllPosts: () => void;
     fetchPost: (id: string) => void;
     fetchUserPosts: (id: string) => void;
-    deletePost: (id: string) => Promise<void>;    
+    deletePost: (id: string) => Promise<void>;
     editPost: (id: string, formData: FormData) => Promise<void>;
     fetchAllTags: () => void;
     fetchPostByTag: (tag: string) => void;

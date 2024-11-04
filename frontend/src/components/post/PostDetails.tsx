@@ -1,6 +1,6 @@
 import { Post } from "../../lib/types";
 import Avatar from "../ui/Avatar";
-import { formatTimestamp } from "../../utils";
+import { formatTimestamp, unslugify } from "../../utils";
 import { Circle } from "./PostCard";
 import { useState } from "react";
 import DOMPurify from "dompurify";
@@ -27,7 +27,7 @@ const PostDetails = ({ post }: { post: Post }) => {
       });
   };
 
-  const tags: string[] = post.tags.map((tagObj) => tagObj.tag.name);
+  const tags: string[] = post.tags.map((tagObj) => tagObj?.name);
   return (
     <div className='flex justify-center'>
       <div className='w-screen max-w-screen-md py-12 px-5 break-words'>
@@ -81,7 +81,7 @@ const PostDetails = ({ post }: { post: Post }) => {
           <div className='flex justify-center py-2'>
             {post?.coverImage && (
               <img
-                src={`data:image/jpeg;base64,${post.coverImage}`}
+                src={post.coverImage}
                 alt='Cover Image'
                 className='w-auto h-auto rounded-sm'
               />
@@ -97,7 +97,7 @@ const PostDetails = ({ post }: { post: Post }) => {
                 to={`/tag/${tag}`}
                 key={tag}
                 className='bg-background text-text px-4 py-2 rounded-md mr-2 mb-2'>
-                {tag}
+                {unslugify(tag![0].toUpperCase() + tag?.slice(1, tag.length))}
               </Link>
             ))}
           </div>

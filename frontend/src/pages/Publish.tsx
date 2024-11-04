@@ -8,7 +8,15 @@ const Publish = () => {
   const { state } = useLocation();
   const { id } = useParams();
 
-  const { setPostId, setTitle, setContent, title, content } = usePostStore();
+  const {
+    setPostId,
+    setTitle,
+    setContent,
+    title,
+    content,
+    setCoverImage,
+    resetPostStore,
+  } = usePostStore();
 
   const handleTitleChange = (e: React.FormEvent<HTMLHeadingElement>) => {
     const newTitle = e.currentTarget.innerText;
@@ -20,19 +28,23 @@ const Publish = () => {
   };
 
   useEffect(() => {
-    return () => {
-      setTitle("");
-      setContent("");
-    };
-  }, [location.pathname, setTitle, setContent]);
-
-  useEffect(() => {
     if (state?.postDetails && id) {
       setPostId(id);
       setTitle(state.postDetails.title);
       setContent(state.postDetails.content);
+      setCoverImage(state.postDetails.coverImage);
+    } else {
+      resetPostStore();
     }
-  }, []);
+  }, [
+    state,
+    id,
+    setPostId,
+    setTitle,
+    setContent,
+    setCoverImage,
+    resetPostStore,
+  ]);
 
   return (
     <div className='flex justify-center w-full px-5 py-6 md:py-12'>

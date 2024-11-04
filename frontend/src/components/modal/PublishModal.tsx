@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { X, Image as ImageIcon, HelpCircle } from "lucide-react";
 import { useToast } from "../../hooks/useToast";
-import Button from "../ui/Button";
 import { usePostStore } from "../../store/postStore";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../../store/userStore";
+import Spinner from "../loader/Spinner";
 
 type Props = {
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -14,7 +14,7 @@ type Props = {
 const PublishModal = ({ setOpenModal, openModal }: Props) => {
   const { showToast } = useToast();
   const [tags, setTags] = useState<string[]>([]);
-  const [coverImage, setCoverImage] = useState<string | File | null>(null);
+
   const {
     publishPost,
     editPost,
@@ -23,9 +23,15 @@ const PublishModal = ({ setOpenModal, openModal }: Props) => {
     post,
     setTitle,
     setContent,
+    setCoverImage,
     title,
     content,
+    coverImage,
+    setPostId,
+    isLoading,
+    resetPost,
   } = usePostStore();
+
   const { user } = useUserStore();
   const navigate = useNavigate();
 
@@ -51,13 +57,33 @@ const PublishModal = ({ setOpenModal, openModal }: Props) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
+  // useEffect(() => {
+  //   if (postId) {
+  //     fetchPost(postId);
+  //   }
+
+  //   const postTags: string[] =
+  //     post?.tags?.map((tagObj) => tagObj.tag.name) || [];
+
+  //   if (postId && post) {
+  //     setTitle(post.title);
+  //     setContent(post.content);
+  //     setTags(postTags);
+  //     if (post.coverImage) {
+  //       setCoverImage(post.coverImage);
+  //     }
+  //   }
+  // }, [postId, fetchPost, post]);
+
+  // useEffect(() => {}, [post]);
+
   useEffect(() => {
     if (postId) {
       fetchPost(postId);
     }
   }, [postId, fetchPost]);
 
-  const postTags: string[] = post?.tags?.map((tagObj) => tagObj.tag.name) || [];
+  const postTags: string[] = post?.tags?.map((tagObj) => tagObj.name) || [];
 
   useEffect(() => {
     if (post) {
@@ -90,6 +116,7 @@ const PublishModal = ({ setOpenModal, openModal }: Props) => {
       navigate("/");
       closeModal();
       resetForm();
+      resetPost();
     } catch (error) {
       console.error("Error publishing post:", error);
       showToast("Failed to publish article.", "error");
@@ -110,7 +137,6 @@ const PublishModal = ({ setOpenModal, openModal }: Props) => {
     if (coverImage) {
       formData.append("coverImage", coverImage);
     }
-
     try {
       if (postId) await editPost(postId, formData);
       showToast("Update successful!", "success");
@@ -127,7 +153,8 @@ const PublishModal = ({ setOpenModal, openModal }: Props) => {
     setTitle("");
     setContent("");
     setTags([]);
-    setCoverImage(null);
+    setCoverImage("");
+    setPostId("");
   };
 
   return (
@@ -159,7 +186,7 @@ const PublishModal = ({ setOpenModal, openModal }: Props) => {
                     className='w-full h-48 object-cover rounded-md'
                   />
                   <button
-                    onClick={() => setCoverImage(null)}
+                    onClick={() => setCoverImage("")}
                     className='absolute top-2 right-2'>
                     <X className='h-4 w-4' />
                   </button>
@@ -188,7 +215,7 @@ const PublishModal = ({ setOpenModal, openModal }: Props) => {
                 </label>
                 <input
                   id='title'
-                  value={title}
+                  value={title || ""}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder='Enter your title'
                   className='w-full focus:ring-0 focus:border-none focus:outline-none bg-gray-100 px-4 py-3'
@@ -244,11 +271,22 @@ const PublishModal = ({ setOpenModal, openModal }: Props) => {
             </div>
 
             <div className='space-y-4 mt-6'>
-              <Button
-                label='Update post'
+              <button
                 onClick={postId ? handleUpdate : handlePublish}
-                style='w-full font-medium text-white bg-btn-primary rounded-lg mr-2'
-              />
+                className={`w-full font-medium text-white text-base px-5 py-2 bg-btn-primary rounded-lg mr-2 ${
+                  !isLoading ? "opacity-100" : "opacity-60"
+                }`}
+                disabled={isLoading}>
+                {!isLoading ? (
+                  postId ? (
+                    "Update post"
+                  ) : (
+                    "Publish post"
+                  )
+                ) : (
+                  <Spinner />
+                )}
+              </button>
               <div className='flex items-center space-x-1 text-gray-500'>
                 <HelpCircle className='h-4 w-4' />
                 <span className='text-xs'>

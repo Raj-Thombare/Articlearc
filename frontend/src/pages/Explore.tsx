@@ -1,7 +1,7 @@
 import { useLocation, useParams } from "react-router-dom";
 import { usePostStore } from "../store/postStore";
 import { PostCard, Circle } from "../components/post/PostCard";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   formatTimestamp,
   getFollowersCount,
@@ -16,44 +16,21 @@ import PostSkeleton from "../components/loader/PostSkeleton";
 const Explore = () => {
   const { tag } = useParams();
   const { pathname } = useLocation();
-  const {
-    fetchAllPosts,
-    posts,
-    tags,
-    fetchAllTags,
-    fetchPostByTag,
-    postsByTag,
-    isLoading,
-  } = usePostStore();
+  const { tags, fetchAllTags, fetchPostByTag, postsByTag, isLoading } =
+    usePostStore();
   const { bookmarks } = useUserStore();
   const [storiesCount, setStoriesCount] = useState(0);
   const [followersCount, setFollowersCount] = useState(0);
 
   const tagName = pathname.split("/tag/")[1];
 
-  const getAllTags = useCallback(() => {
+  useEffect(() => {
     if (!tags) {
       fetchAllTags();
     }
-  }, [tags]);
 
-  const getPostByTag = useCallback(() => {
     fetchPostByTag(tagName);
-  }, [tagName]);
 
-  const getAllPosts = useCallback(() => {
-    if (!posts) {
-      fetchAllPosts();
-    }
-  }, [posts]);
-
-  useEffect(() => {
-    getAllTags();
-    getPostByTag();
-    getAllPosts();
-  }, [getAllTags, getPostByTag, getAllPosts]);
-
-  useEffect(() => {
     const stories = getStoriesCount();
     const followers = getFollowersCount();
 
@@ -88,7 +65,7 @@ const Explore = () => {
                 <Circle />
               </div>
               <div className='pl-2 font-medium text-text text-base flex justify-center flex-col'>
-                {storiesCount}k stories
+                {storiesCount}k Stories
               </div>
             </div>
             <Button
@@ -120,7 +97,7 @@ const Explore = () => {
                 );
               })
             ) : (
-              <p className='text-center'>No posts found for this tag.</p>
+              <p className='text-center'>No posts found.</p>
             )}
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { formatTimestamp, sortposts } from "../utils";
+import { formatTimestamp } from "../utils";
 import PostSkeleton from "../components/loader/PostSkeleton";
 import { useParams } from "react-router-dom";
 import { useUserStore } from "../store/userStore";
@@ -34,11 +34,6 @@ const Profile = () => {
 
   const isOwner = authUser?.id === user?.id;
 
-  let sortedposts;
-  if (userPosts) {
-    sortedposts = sortposts(userPosts);
-  }
-
   return (
     <div className='flex flex-col-reverse md:flex-row md:justify-evenly md:min-h-[calc(74vh-70px)]'>
       <div className='flex-1 max-w-[728px] py-6 md:py-12 border-t md:border-0'>
@@ -54,7 +49,7 @@ const Profile = () => {
             ) : !isLoading && userPosts && userPosts.length === 0 ? (
               <div className='text-center py-4'>No articles written yet.</div>
             ) : (
-              sortedposts?.map((post) => {
+              userPosts?.map((post) => {
                 const formattedDate = formatTimestamp(post.createdAt);
                 return (
                   <PostCard

@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import Aside from "../components/global/Aside";
 import { useUserStore } from "../store/userStore";
 import { useAuthStore } from "../store/authStore";
-import { formatTimestamp, sortposts } from "../utils";
+import { formatTimestamp } from "../utils";
 import { AddBookmarkIcon } from "../assets/icons";
 import TagSkeleton from "../components/loader/TagSkeleton";
 import UserCardSkeleton from "../components/loader/UserCardSkeleton";
@@ -27,20 +27,15 @@ const Home = () => {
     if (!bookmarks && authUser?.id) {
       fetchBookmarks(authUser?.id);
     }
-  }, [bookmarks]);
-
-  let sortedposts;
-  if (posts) {
-    sortedposts = sortposts(posts);
-  }
+  }, [authUser]);
 
   return (
     <div className='flex flex-col md:flex-row md:justify-evenly md:min-h-[calc(74vh-70px)]'>
       <main className='flex-1 max-w-[728px] md:py-12'>
         <div className='px-4'>
-          {isLoading && (!posts || posts.length === 0)
+          {isLoading
             ? [...Array(5)].map((_, index) => <PostSkeleton key={index} />)
-            : sortedposts?.map((post) => {
+            : posts?.map((post) => {
                 const formatedDate = formatTimestamp(post.createdAt);
                 return (
                   <PostCard

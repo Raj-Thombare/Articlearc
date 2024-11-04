@@ -157,9 +157,10 @@ export const PostCard = memo(
                       </button>
                     </>
                   )}
-                {pathname === "/" || pathname.endsWith("/saved") ? (
+                {!pathname.startsWith("/profile") ||
+                pathname.endsWith("/saved") ? (
                   <button
-                    className='cursor-pointer'
+                    className='cursor-pointer hover:opacity-70'
                     onClick={(event) => {
                       event.preventDefault();
                       if (isSaved) {
@@ -177,7 +178,7 @@ export const PostCard = memo(
           <div className='flex items-start justify-end py-2'>
             {coverImage && (
               <img
-                src={`data:image/jpeg;base64,${coverImage}`}
+                src={coverImage}
                 alt='Cover Image'
                 className='cover-image w-[140px] sm:w-[160px] h-20 ml-[26px] sm:ml-[56px]'
               />
@@ -211,9 +212,9 @@ export const PostCard = memo(
                   </button>
                 </>
               )}
-            {pathname === "/" || pathname.endsWith("/saved") ? (
+            {!pathname.startsWith("/profile") ? (
               <button
-                className='cursor-pointer'
+                className='cursor-pointer hover:opacity-70'
                 onClick={(event) => {
                   event.preventDefault();
                   if (isSaved) {
