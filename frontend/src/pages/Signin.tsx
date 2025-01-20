@@ -7,6 +7,7 @@ import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../hooks/useToast";
 import { useUserStore } from "../store/userStore";
+import { motion } from "framer-motion";
 
 const test_email = import.meta.env.VITE_TEST_USER_EMAIL;
 const test_password = import.meta.env.VITE_TEST_USER_PASSWORD;
@@ -51,7 +52,11 @@ const Signin = () => {
   };
 
   return (
-    <div className='grid grid-cols-1 items-center mt-10 py-6 md:py-12'>
+    <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 0.3, delay: 0.3, ease: "easeInOut" }}
+      className='grid grid-cols-1 items-center mt-10 py-6 md:py-12'>
       <div className='flex justify-center items-center'>
         <div className='w-full max-w-md px-10'>
           <AuthHeader type='signin' />
@@ -92,7 +97,7 @@ const Signin = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

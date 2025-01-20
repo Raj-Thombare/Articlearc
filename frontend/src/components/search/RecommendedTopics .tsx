@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { unslugify } from "../../utils";
 import { usePostStore } from "../../store/postStore";
+import { motion } from "framer-motion";
 
 const RecommendedTopics = ({
   isActive,
@@ -22,7 +23,10 @@ const RecommendedTopics = ({
   const allTags = tags?.flatMap((tag: { name: string }) => tag.name);
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, delay: 0.3, ease: "linear" }}
       className={` ${
         path?.startsWith("/tag") ? "mb-10" : "mt-8 md:mt-0 px-4 md:px-0"
       } `}>
@@ -51,7 +55,7 @@ const RecommendedTopics = ({
         className='text-green-600 hover:text-green-700 text-sm'>
         See more topics
       </Link>
-    </div>
+    </motion.div>
   );
 };
 

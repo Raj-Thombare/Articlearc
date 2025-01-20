@@ -1,6 +1,5 @@
 import { Post, User } from "../../lib/types";
 import { PostCard } from "../post/PostCard";
-import { formatTimestamp } from "../../utils";
 import { useUserStore } from "../../store/userStore";
 import { useEffect } from "react";
 import UserProfileCard from "../user/UserProfileCard";
@@ -31,20 +30,7 @@ const SearchResult = ({ activeTab, posts, users }: Props) => {
             {posts.length !== 0 ? (
               <div>
                 {posts.map((post: Post) => {
-                  const formatedDate = formatTimestamp(post.createdAt);
-                  return (
-                    <PostCard
-                      key={post.id}
-                      id={post.id}
-                      authorName={post.author?.name}
-                      authorId={post.authorId}
-                      title={post.title}
-                      coverImage={post.coverImage}
-                      content={post.content}
-                      publishedDate={formatedDate}
-                      bookmarks={bookmarks}
-                    />
-                  );
+                  return <PostCard key={post.id} post={post} />;
                 })}
               </div>
             ) : (

@@ -3,6 +3,7 @@ import { useAuthStore } from "../../store/authStore";
 import { useUserStore } from "../../store/userStore";
 import Button from "../ui/Button";
 import DeleteModal from "../modal/DeleteModal";
+import { motion } from "framer-motion";
 
 const SettingsTab = () => {
   const { user } = useUserStore();
@@ -11,7 +12,11 @@ const SettingsTab = () => {
   const [openModal, setOpenModal] = useState<boolean>(false);
 
   return (
-    <div className='flex flex-col mb-10 md:mb-0 py-6 md:py-0'>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, delay: 0.3, ease: "easeInOut" }}
+      className='flex flex-col mb-10 md:mb-0 py-6 md:py-0'>
       <div className='mb-6'>
         <div className='font-semibold'>Account</div>
         <div className='text-slate-700 bg-gray-100 p-4 rounded-xl mt-2 text-sm'>
@@ -90,7 +95,7 @@ const SettingsTab = () => {
           <DeleteModal setOpenModal={setOpenModal} openModal={openModal} />
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

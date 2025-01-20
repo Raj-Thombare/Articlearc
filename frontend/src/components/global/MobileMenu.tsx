@@ -77,7 +77,7 @@ const MobileMenu = ({
             setSearchTerm(e.target.value);
           }}
           className='block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus-visible:outline-none focus:ring-0'
-          placeholder='Search...'
+          placeholder='Search'
         />
       </div>
       <ul className='md:hidden w-auto flex items-start flex-col p-4 font-medium rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white'>

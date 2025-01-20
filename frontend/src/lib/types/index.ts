@@ -3,14 +3,20 @@ export interface User {
     name: string;
     email: string;
     username: string;
-    about: string
+    about: string;
+    followers: Follower[];
+    following: Following[];
+    _count: {
+        followers: number,
+        following: number
+    }
 }
 
 export interface Post {
+    key: string;
     content: string;
-    title: string;
-    id: string
-    authorId: string;
+    title: string;                            
+    id: string;
     coverImage: string;
     tags: Tag[];
     author: {
@@ -18,21 +24,17 @@ export interface Post {
         id: string;
         email: string;
         username: string;
-    }
+    },
+    bookmarks: Bookmark[] | null;
     createdAt: string;
+    _count: {
+        likes: number;
+    }
 }
 
-export interface PostCardType {
-    authorName: string;
-    authorId: string;
-    title: string;
-    content: string;
-    coverImage: string;
-    publishedDate: string;
-    id: string;
-    bookmarks: Bookmark[] | null;
-    isOwner?: boolean;
-    tags?: [] | null;
+export interface PostCardTypes {
+    key: string;
+    post: Post;
 }
 
 export interface AuthStateType {
@@ -94,6 +96,7 @@ export interface UserStateType {
     error: string | null;
     fetchUser: (id: string) => void;
     fetchAllUsers: () => void;
+    followUser: (id: string) => void;
     fetchBookmarks: (id: string) => void;
     createBookmark: (userId: string, postId: string) => Promise<void>;
     removeBookmark: (userId: string, postId: string) => Promise<void>;
@@ -106,4 +109,22 @@ export interface AvatarProps {
     size?: string;
     font?: "bold" | "light";
     styles?: string;
+}
+
+export interface Follower {
+    follower: {
+        id: string
+    }
+}
+
+export interface Following {
+    following: {
+        id: string
+    }
+}
+
+export interface Like {
+    likes: {
+        id: string
+    }
 }

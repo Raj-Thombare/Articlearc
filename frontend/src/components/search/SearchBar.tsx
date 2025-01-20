@@ -94,7 +94,7 @@ const SearchBar = ({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className='block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-0'
-            placeholder='Search...'
+            placeholder='Search'
             onKeyDown={handleKeyDown}
           />
         </div>

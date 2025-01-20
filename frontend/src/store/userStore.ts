@@ -8,7 +8,7 @@ export const useUserStore = create<UserStateType>((set) => ({
     user: null,
     users: null,
     bookmarks: null,
-    isLoading: true,
+    isLoading: false,
     error: null,
 
     fetchUser: async (id: string) => {
@@ -47,6 +47,19 @@ export const useUserStore = create<UserStateType>((set) => ({
             set({ bookmarks: data.savedPosts, isLoading: false });
         } catch (error) {
             set({ error: 'Failed to fetch saved posts', isLoading: false });
+        }
+    },
+
+    followUser: async (id: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            const token = getToken();
+            await axios.post(`${BACKEND}/api/v1/user/follow/${id}`, {}, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            set({ isLoading: false });
+        } catch (error) {
+            set({ error: 'Failed to follow user', isLoading: false });
         }
     },
 

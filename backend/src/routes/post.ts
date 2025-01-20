@@ -278,10 +278,17 @@ postRouter.get('/all', async (c) => {
                         name: true
                     }
                 },
+                _count: {
+                    select: {
+                        likes: true
+                    }
+                },
                 authorId: true,
                 author: {
                     select: {
                         name: true,
+                        email: true,
+                        id: true,
                     }
                 }
             },
@@ -324,6 +331,11 @@ postRouter.get('/user/:userId', isAuth, async (c) => {
                         tags: {
                             select: {
                                 name: true
+                            }
+                        },
+                        _count: {
+                            select: {
+                                likes: true
                             }
                         },
                         author: {
@@ -373,6 +385,11 @@ postRouter.get('/:id', async (c) => {
                 tags: {
                     select: {
                         name: true
+                    }
+                },
+                _count: {
+                    select: {
+                        likes: true
                     }
                 },
                 author: {
@@ -478,4 +495,59 @@ postRouter.get('/tags/all', async (c) => {
     }
 });
 
+//like a post
+postRouter.post('/like/:id', isAuth, async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    const userId = c.get('userId');
+    const postId = c.req.param('id');
+    try {
+
+        const post = await prisma.post.findUnique({
+            where: { id: postId },
+        });
+
+        if (!post) {
+            return c.json({ error: "Post not found" }, 404);
+        }
+
+        const isLiked = await prisma.like.findUnique({
+            where: {
+                postId_userId: {
+                    postId: postId,
+                    userId: userId
+                }
+            }
+        });
+
+        if (!isLiked) {
+            await prisma.like.create({
+                data: {
+                    postId: postId,
+                    userId: userId
+                }
+            })
+
+            return c.json({ msg: "Post liked" })
+        } else {
+            await prisma.like.delete({
+                where: {
+                    postId_userId: {
+                        postId: postId,
+                        userId: userId
+                    }
+                }
+            })
+
+            return c.json({ msg: "Post like removed" })
+        }
+
+    } catch (error) {
+        console.error("Error fetching tags:", error);
+        c.status(500);
+        return c.json({ error: "Error while fetching tags" });
+    }
+});
 

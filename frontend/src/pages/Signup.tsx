@@ -6,6 +6,7 @@ import Button from "../components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { useToast } from "../hooks/useToast";
+import { motion } from "framer-motion";
 
 const Signup = () => {
   const [postInput, setPostInput] = useState<SignupType>({
@@ -39,7 +40,11 @@ const Signup = () => {
   };
 
   return (
-    <div className='grid grid-cols-1 items-center mt-10 py-6 md:py-12'>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, delay: 0.3, ease: "easeInOut" }}
+      className='grid grid-cols-1 items-center mt-10 py-6 md:py-12'>
       <div className='flex justify-center items-center'>
         <div className='w-full max-w-md px-10'>
           <AuthHeader type='signup' />
@@ -89,7 +94,7 @@ const Signup = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

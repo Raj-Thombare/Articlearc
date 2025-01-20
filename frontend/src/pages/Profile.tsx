@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { formatTimestamp } from "../utils";
 import PostSkeleton from "../components/loader/PostSkeleton";
 import { useParams } from "react-router-dom";
 import { useUserStore } from "../store/userStore";
@@ -46,25 +45,11 @@ const Profile = () => {
             )}
             {isLoading ? (
               [...Array(3)].map((_, index) => <PostSkeleton key={index} />)
-            ) : !isLoading && userPosts && userPosts.length === 0 ? (
+            ) : !isLoading && !userPosts ? (
               <div className='text-center py-4'>No articles written yet.</div>
             ) : (
               userPosts?.map((post) => {
-                const formattedDate = formatTimestamp(post.createdAt);
-                return (
-                  <PostCard
-                    key={post.id}
-                    id={post.id}
-                    coverImage={post.coverImage}
-                    authorName={post.author.name}
-                    authorId={post.author.id}
-                    title={post.title}
-                    content={post.content}
-                    publishedDate={formattedDate}
-                    bookmarks={bookmarks}
-                    isOwner={isOwner}
-                  />
-                );
+                return <PostCard key={post.id} post={post} />;
               })
             )}
           </div>
@@ -88,6 +73,5 @@ const Profile = () => {
     </div>
   );
 };
-
 
 export default Profile;

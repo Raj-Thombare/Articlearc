@@ -23,8 +23,27 @@ userRouter.get('/', async (c) => {
                 name: true,
                 email: true,
                 username: true,
-                about: true
-            }
+                about: true,
+                followers: {
+                    select: {
+                        follower: {
+                            select: {
+                                id: true,
+                            }
+                        }
+                    }
+                },
+                following: {
+                    select: {
+                        following: {
+                            select: {
+                                id: true,
+                            }
+                        }
+                    }
+                },
+            },
+
         });
 
         if (!users) {
@@ -83,23 +102,30 @@ userRouter.get('/:id', async (c) => {
                 email: true,
                 username: true,
                 about: true,
-                posts: {
+                followers: {
                     select: {
-                        id: true,
-                        title: true,
-                        content: true,
-                        createdAt: true,
-                        coverImage: true,
-                        tags: true,
-                        author: {
+                        follower: {
                             select: {
-                                id: true,  
-                                name: true,
-                                username: true
+                                id: true,
                             }
                         }
                     }
-                }
+                },
+                following: {
+                    select: {
+                        following: {
+                            select: {
+                                id: true,
+                            }
+                        }
+                    }
+                },
+                _count: {
+                    select: {
+                        followers: true,
+                        following: true
+                    }
+                },
             }
         });
 
@@ -158,7 +184,7 @@ userRouter.post('/:id/bookmark', isAuth, async (c) => {
 
     //@ts-ignore
     const userId = c.get('userId') as string;
-
+    console.log('userId: ', userId)
     try {
         const { postId } = await c.req.json();
 
@@ -276,3 +302,60 @@ userRouter.patch('/:id', isAuth, async (c) => {
         return c.json({ error: "Error while updating" }, 500);
     }
 });
+
+//follow, unfollow user
+userRouter.post('/follow/:id', isAuth, async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    // @ts-ignore
+    const userId = c.get('userId') as string;
+    const userToFollowId = c.req.param('id');
+
+    try {
+        if (userId == userToFollowId) {
+            return c.json({ error: "Cannot follow/unfollow yourself" }, 400);
+        }
+
+        const validUser = prisma.user.findUnique({
+            where: {
+                id: userToFollowId
+            }
+        })
+
+        if (!validUser) {
+            return c.json({ message: "user not found" }, 404);
+        }
+
+        const isFollowing = await prisma.follow.findUnique({
+            where: {
+                followerId_followingId: {
+                    followerId: userId,
+                    followingId: userToFollowId,
+                },
+            },
+        });
+
+        if (!isFollowing) {
+            await prisma.follow.create({
+                data: {
+                    followerId: userId,
+                    followingId: userToFollowId,
+                },
+            });
+
+            return c.json({ message: "Followed successfully" });
+
+        } else {
+            await prisma.follow.delete({
+                where: { id: isFollowing.id },
+            });
+            return c.json({ message: "Unfollowed successfully" });
+        }
+
+    } catch (error) {
+        console.log('Error while following user', error)
+        return c.json({ error: "Error while following" }, 500)
+    }
+})   

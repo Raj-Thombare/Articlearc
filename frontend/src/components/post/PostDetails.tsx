@@ -7,6 +7,7 @@ import DOMPurify from "dompurify";
 import { useToast } from "../../hooks/useToast";
 import { Link, useLocation } from "react-router-dom";
 import PostActionButtons from "./PostActionButtons";
+import { motion } from "framer-motion";
 
 const PostDetails = ({ post }: { post: Post }) => {
   const [following, setFollowing] = useState(false);
@@ -29,7 +30,11 @@ const PostDetails = ({ post }: { post: Post }) => {
 
   const tags: string[] = post.tags.map((tagObj) => tagObj?.name);
   return (
-    <div className='flex justify-center'>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, delay: 0.5, ease: "linear" }}
+      className='flex justify-center'>
       <div className='w-screen max-w-screen-md py-12 px-5 break-words'>
         <div>
           <div className='text-[32px] md:text-[42px] leading-10 md:leading-12 font-[900] pb-2'>
@@ -104,7 +109,7 @@ const PostDetails = ({ post }: { post: Post }) => {
           <PostActionButtons handleCopyLink={handleCopyLink} />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

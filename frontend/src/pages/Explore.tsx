@@ -2,12 +2,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { usePostStore } from "../store/postStore";
 import { PostCard, Circle } from "../components/post/PostCard";
 import { useEffect, useState } from "react";
-import {
-  formatTimestamp,
-  getFollowersCount,
-  getStoriesCount,
-  unslugify,
-} from "../utils";
+import { getFollowersCount, getStoriesCount, unslugify } from "../utils";
 import Button from "../components/ui/Button";
 import { useUserStore } from "../store/userStore";
 import Carousel from "../components/ui/Carousel";
@@ -81,20 +76,7 @@ const Explore = () => {
               [...Array(2)].map((_, index) => <PostSkeleton key={index} />)
             ) : postsByTag && postsByTag.length > 0 ? (
               postsByTag.map((post) => {
-                const formatedDate = formatTimestamp(post.createdAt);
-                return (
-                  <PostCard
-                    key={post.id}
-                    id={post.id}
-                    authorName={post.author?.name}
-                    authorId={post.authorId}
-                    title={post.title}
-                    coverImage={post.coverImage}
-                    content={post.content}
-                    publishedDate={formatedDate}
-                    bookmarks={bookmarks}
-                  />
-                );
+                return <PostCard key={post.id} post={post} />;
               })
             ) : (
               <p className='text-center'>No posts found.</p>

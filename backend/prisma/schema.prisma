@@ -23,6 +23,9 @@ model User {
   about     String?
   posts     Post[]
   bookmarks Bookmark[]
+  followers Follow[] @relation("Followers")
+  following Follow[] @relation("Following")
+  likes     Like[]
 }
 
 model Post {
@@ -36,6 +39,8 @@ model Post {
   createdAt  DateTime @default(now()) @db.Timestamptz(6)
   bookmarks  Bookmark[] 
   tags       Tag[]
+  likes      Like[]
+  comments   Comment[]   
 }
 
 model Bookmark {
@@ -51,4 +56,31 @@ model Tag {
   id     String @id @default(uuid())
   name   String @unique
   posts  Post[]
+}
+
+model Follow {
+  id          String @id @default(uuid())
+  followerId  String
+  followingId String
+  follower    User   @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User   @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId]) // Ensure unique follow relationships
+}
+
+model Like {
+  postId  String
+  userId  String
+  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId]) 
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
 }

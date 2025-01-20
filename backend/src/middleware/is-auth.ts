@@ -3,6 +3,7 @@ import { verify } from 'hono/jwt'
 
 export const isAuth = createMiddleware(async (c, next) => {
     const jwt = c.req.header("Authorization");
+
     if (!jwt) {
         c.status(401);
         return c.json({ error: "unauthorized" });

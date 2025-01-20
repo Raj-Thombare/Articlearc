@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { PostCard } from "../components/post/PostCard";
-import { formatTimestamp } from "../utils";
 import { useUserStore } from "../store/userStore";
 import Spinner from "../components/loader/Spinner";
 
@@ -23,20 +22,7 @@ const Bookmark = () => {
               <div>
                 {bookmarks?.map((bookmark) => {
                   const post = bookmark.post;
-                  const formattedDate = formatTimestamp(post.createdAt);
-                  return (
-                    <PostCard
-                      key={post.id}
-                      id={post.id}
-                      authorName={post.author?.name}
-                      authorId={post.authorId}
-                      title={post.title}
-                      content={post.content}
-                      coverImage={post.coverImage}
-                      publishedDate={formattedDate}
-                      bookmarks={bookmarks}
-                    />
-                  );
+                  return <PostCard key={post.id} post={post} />;
                 })}
               </div>
             ) : (

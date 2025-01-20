@@ -15,8 +15,8 @@ const Button = ({ label, onClick, size, icon, style, font }: Props) => {
       type='button'
       onClick={onClick}
       className={`font-medium px-5 py-2 flex items-center transition-all text-nowrap duration-100 ${
-        size ? "text-lg" : "text-sm"
-      } ${style}`}>
+        size == "xs" && "text-[13px]"
+      } ${size == "sm" && "text-sm"}  ${size == "lg" && "text-lg"} ${style}`}>
       {icon ? <div className='mr-1'>{icon}</div> : ""}
       <p className={`mx-auto text-center ${font ? font : ""}`}>{label}</p>
     </button>

@@ -7,7 +7,6 @@ import { useEffect } from "react";
 import Aside from "../components/global/Aside";
 import { useUserStore } from "../store/userStore";
 import { useAuthStore } from "../store/authStore";
-import { formatTimestamp } from "../utils";
 import { AddBookmarkIcon } from "../assets/icons";
 import TagSkeleton from "../components/loader/TagSkeleton";
 import UserCardSkeleton from "../components/loader/UserCardSkeleton";
@@ -36,20 +35,7 @@ const Home = () => {
           {isLoading
             ? [...Array(5)].map((_, index) => <PostSkeleton key={index} />)
             : posts?.map((post) => {
-                const formatedDate = formatTimestamp(post.createdAt);
-                return (
-                  <PostCard
-                    key={post.id}
-                    id={post.id}
-                    authorName={post.author.name}
-                    authorId={post.authorId}
-                    title={post.title}
-                    coverImage={post.coverImage}
-                    content={post.content}
-                    publishedDate={formatedDate}
-                    bookmarks={bookmarks}
-                  />
-                );
+                return <PostCard key={post.id} post={post} />;
               })}
         </div>
       </main>
